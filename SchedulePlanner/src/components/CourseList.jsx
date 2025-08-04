@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './Courses.module.css';
+import './Courses.css';
 
 export default function CourseList() {
 
@@ -38,13 +38,14 @@ export default function CourseList() {
     ]);
     const [selectedCourse, setSelectedCourse] = useState({});
 
-
     return (
         <>
-            <div className={styles.courseListHeader}>
+            <div className='courseListHeader'>
                 <h1>Courses</h1>
-                <button>+ Add</button>
-                <button>- Delete</button>
+                <button className='btn btn-light'>
+                    <i className="fa fa-plus" aria-hidden="true"></i>
+                </button>
+
             </div>
             <div className="table-responsive">
                 <table className="table table-hover">
@@ -52,17 +53,27 @@ export default function CourseList() {
                         {courseList.map((course) => (
                             <tr key={course.id}>
                                 <td>
-                                    <input type="checkbox" value={course.id} />
+                                    <input
+                                        type="checkbox"
+                                        value={course.id}
+                                    />
                                 </td>
                                 <td className='text-left'>{course.name}</td>
                                 <td>
                                     <button type="button"
-                                        className="btn btn-info"
+                                        className="btn btn-outline-info"
                                         data-toggle="modal"
                                         data-target="#exampleModalCenter"
                                         onClick={() => setSelectedCourse(course)}
                                     >
-                                        view
+                                        <i className="fa fa-info-circle"></i>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button"
+                                        className="btn btn-outline-danger"
+                                    >
+                                        <i className='fa fa-trash' aria-hidden="true"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -114,12 +125,6 @@ export default function CourseList() {
                                 <strong>Description:</strong> <br />
                                 {selectedCourse.courseDescription}
                             </p>
-                            <p>
-                                <strong>Color:</strong> <br />
-                            </p>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>

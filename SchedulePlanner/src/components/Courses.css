@@ -1,0 +1,52 @@
+.courseListHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+/* .courseListHeader button{
+    border: 2px solid black;
+}
+
+.courseListHeader button:hover{
+    background-color: gray;
+    color: white;
+} */
+
+.courseListHeader button {
+    border: 2px solid grey;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.courseListHeader button:hover {
+    border: 2px solid grey;
+    background-color: #d3d3d3;
+    transform: translateY(-3px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.table button {
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.table button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fa {
+    font-size: 1rem;
+}
