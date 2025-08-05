@@ -10,41 +10,41 @@ const DailyScheduling = ({ onBack }) => {
     {
       id: 1,
       status: 'Enrolled',
-      class: '87631',
-      subject: 'ACCT',
-      course: '6301',
-      section: '001',
+      class: '10000',
+      subject: 'Java',
+      course: '201',
+      section: '003',
       seatsOpen: 16,
       waitlistSeats: 0,
-      waitlistOpen: 20,
+      waitlistOpen: 10,
       schedule: 'W 17:30am - 21:00pm',
-      location: 'JSOM 2.106'
+      location: 'Microsoft Teams'
     },
     {
       id: 2,
       status: 'Enrolled',
-      class: '86492',
-      subject: 'CS',
-      course: '6301',
-      section: '501',
+      class: '20000',
+      subject: 'Hackerrank',
+      course: '202',
+      section: '206',
       seatsOpen: 15,
       waitlistSeats: 0,
       waitlistOpen: 15,
       schedule: 'T 7:00pm - 9:45pm',
-      location: 'JSOM No Meeting'
+      location: 'Microsoft Teams'
     },
     {
       id: 3,
       status: 'Not Enrolled',
-      class: '87632',
-      subject: 'OPRE',
-      course: '6301',
-      section: '002',
-      seatsOpen: 5,
+      class: '30000',
+      subject: 'Emerging Talent Bootcamp',
+      course: '203',
+      section: '005',
+      seatsOpen: 14,
       waitlistSeats: 0,
       waitlistOpen: 20,
       schedule: 'M 1:00pm - 3:15pm',
-      location: 'JSOM 2.118'
+      location: 'Microsoft Teams'
     }
   ];
 
@@ -63,27 +63,27 @@ const DailyScheduling = ({ onBack }) => {
       day: 'Wednesday',
       startTime: '17:30',
       endTime: '21:00',
-      subject: 'ACCT 6301 001',
-      instructor: 'Nihongo Li',
-      location: 'JSOM 2.106',
+      subject: 'Java',
+      instructor: 'Taryn Ernd',
+      location: 'Microsoft Teams',
       color: '#4CAF50'
     },
     {
       day: 'Tuesday',
       startTime: '19:00',
       endTime: '21:45',
-      subject: 'CS 6301 501',
-      instructor: 'Jeffrey Neal Ricks',
-      location: 'JSOM',
+      subject: 'Hackerrank',
+      instructor: 'Antoinette Saade',
+      location: 'Microsoft Teams',
       color: '#FF9800'
     },
     {
       day: 'Tuesday',
       startTime: '08:00',
       endTime: '11:15',
-      subject: 'OPRE 6301 002',
-      instructor: 'Sonia F Leach',
-      location: 'JSOM 2.118',
+      subject: 'Emerging Talent Bootcamp',
+      instructor: 'Akshat Sharma',
+      location: 'Microsoft Teams',
       color: '#2196F3'
     }
   ];
