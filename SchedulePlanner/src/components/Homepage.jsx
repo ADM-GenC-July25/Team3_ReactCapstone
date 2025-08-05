@@ -38,8 +38,8 @@ const Homepage = () => {
         <div className="features-grid">
           <div className="feature-card clickable" onClick={handleDailySchedulingClick}>
             <div className="feature-icon">📅</div>
-            <h3>Daily Scheduling</h3>
-            <p>Plan your day with 15-minute interval precision from 6 AM to 10 PM</p>
+            <h3>View Schedule</h3>
+            <p>View your day</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">🎨</div>
@@ -53,8 +53,8 @@ const Homepage = () => {
           </div>
           <div className="feature-card">
             <div className="feature-icon">⏰</div>
-            <h3>Time Management</h3>
-            <p>Visual timeline helps you manage your time effectively</p>
+            <h3>Generate Schedule</h3>
+            <p>Plan your day with 15-minute interval precision from 6 AM to 10 PM</p>
           </div>
         </div>
       </div>
