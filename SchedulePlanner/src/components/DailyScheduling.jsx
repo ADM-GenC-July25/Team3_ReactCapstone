@@ -168,9 +168,8 @@ const DailyScheduling = ({ onBack }) => {
 
   return (
     <div className="daily-scheduling-container">
-      <div className="header-section">
-        <button className="back-button" onClick={onBack}>← Back</button>
-      </div>
+      {/* <div className="header-section">
+      </div> */}
 
       <div className="alert-section">
         <div className="alert">
@@ -247,7 +246,6 @@ const DailyScheduling = ({ onBack }) => {
             {weekDays.map(day => (
               <div key={day} className="calendar-header day-header">
                 <div className="day-name">{day}</div>
-                <div className="no-morning-classes">No Morning Classes</div>
               </div>
             ))}
 

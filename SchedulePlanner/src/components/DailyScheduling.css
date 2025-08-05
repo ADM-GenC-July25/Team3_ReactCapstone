@@ -7,16 +7,16 @@
 }
 
 /* Header Section */
-.header-section {
+/* .header-section {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #6f53d2;
   padding: 0.5rem 1rem;
   margin-bottom: 1rem;
-}
+} */
 
-.back-button {
+/* .back-button {
   background: none;
   border: none;
   color: white;
@@ -29,7 +29,7 @@
 
 .back-button:hover{
   background-color: rgba(255, 255, 255, 0.1);
-}
+} */
 
 /* Alert Section */
 .alert-section {
@@ -226,12 +226,6 @@
   color: #333;
 }
 
-.no-morning-classes {
-  font-size: 0.7rem;
-  color: #6c757d;
-  font-weight: normal;
-}
-
 .time-label {
   background-color: #f8f9fa;
   padding: 0.5rem;
@@ -296,10 +290,10 @@
     padding: 0.5rem;
   }
   
-  .header-section {
+  /* .header-section {
     flex-wrap: wrap;
     gap: 0.5rem;
-  }
+  } */
   
   .class-table-section {
     overflow-x: auto;
