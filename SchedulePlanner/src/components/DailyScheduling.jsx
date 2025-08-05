@@ -51,10 +51,10 @@ const DailyScheduling = ({ onBack }) => {
   // Calendar data based on the image
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const timeSlots = [
-    '6:00', '6:30', '7:00', '7:30', '8:00', '8:30', '9:00', '9:30', '10:00', '10:30',
-    '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
+    '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
+    '11:00', '11:15', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
     '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30',
-    '21:00', '21:30', '22:00'
+    '21:00', '21:30', '21:45', '22:00'
   ];
 
   // Example schedule events
@@ -79,7 +79,7 @@ const DailyScheduling = ({ onBack }) => {
     },
     {
       day: 'Tuesday',
-      startTime: '8:00',
+      startTime: '08:00',
       endTime: '11:15',
       subject: 'OPRE 6301 002',
       instructor: 'Sonia F Leach',
@@ -87,6 +87,14 @@ const DailyScheduling = ({ onBack }) => {
       color: '#2196F3'
     }
   ];
+
+  const formatTimeDisplay = (time24) => {
+    const [hours, minutes] = time24.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}:${minutes} ${ampm}`;
+  };
 
   const getWeekDateRange = (weekNumber) => {
     const startDate = new Date(2025, 8, 1); // September 1, 2025
@@ -146,7 +154,9 @@ const DailyScheduling = ({ onBack }) => {
     const startIndex = timeSlots.indexOf(event.startTime);
     const endIndex = timeSlots.indexOf(event.endTime);
     
-    if (dayIndex === -1 || startIndex === -1 || endIndex === -1) return null;
+    if (dayIndex === -1 || startIndex === -1 || endIndex === -1) {
+      return null;
+    }
     
     return {
       gridColumn: dayIndex + 2, // +2 because first column is time labels
@@ -195,29 +205,29 @@ const DailyScheduling = ({ onBack }) => {
                   </span>
                 </td>
                 <td>
-                  <span className="data_in_table">{cls.class}</span>
+                  <span className='table-data'>{cls.class}</span>
                 </td>
                 <td>
-                  <span className="data_in_table">{cls.subject}</span>
+                  <span className='table-data'>{cls.subject}</span>
                 </td>
                 <td>
-                  <span className="data_in_table">{cls.course}</span>
+                  <span className='table-data'>{cls.course}</span>
                 </td>
                 <td>
-                  <span className="data_in_table">{cls.section}</span>
+                  <span className='table-data'>{cls.section}</span>
                 </td>
                 <td>
-                  <span className="data_in_table">{cls.seatsOpen}</span>
+                  <span className='table-data'>{cls.seatsOpen}</span>
                 </td>
                 <td>
-                  <span className="data_in_table">{cls.waitlistSeats}</span>
+                  <span className='table-data'>{cls.waitlistSeats}</span>
                 </td>
                 <td>
-                  <span className="data_in_table">{cls.waitlistOpen}</span>
+                  <span className='table-data'>{cls.waitlistOpen}</span>
                 </td>
                 <td>
-                  <span className="data_in_table">{cls.schedule}</span><br/>
-                  <span className="data_in_table">{cls.location}</span>
+                  <span className='table-data'>{cls.schedule}</span><br/>
+                  <span className='table-data'>{cls.location}</span>
                 </td>
               </tr>
             ))}
@@ -230,42 +240,47 @@ const DailyScheduling = ({ onBack }) => {
 
       {/* Calendar View */}
       <div className="calendar-section">
-        <div className="calendar-grid">
-          {/* Header row */}
-          <div className="calendar-header time-header"></div>
-          {weekDays.map(day => (
-            <div key={day} className="calendar-header day-header">
-              <div className="day-name">{day}</div>
-            </div>
-          ))}
-
-          {/* Time slots */}
-          {timeSlots.map((time, index) => (
-            <React.Fragment key={time}>
-              <div className="time-label">{time}</div>
-              {weekDays.map(day => (
-                <div key={`${day}-${time}`} className="time-slot"></div>
-              ))}
-            </React.Fragment>
-          ))}
-
-          {/* Schedule events */}
-          {scheduleEvents.map((event, index) => {
-            const position = getEventPosition(event);
-            if (!position) return null;
-            
-            return (
-              <div
-                key={index}
-                className="schedule-event"
-                style={position}
-              >
-                <div className="event-title">{event.subject}</div>
-                <div className="event-instructor">{event.instructor}</div>
-                <div className="event-location">{event.location}</div>
+        <div className="calendar-container">
+          <div className="calendar-grid">
+            {/* Header row */}
+            <div className="calendar-header time-header"></div>
+            {weekDays.map(day => (
+              <div key={day} className="calendar-header day-header">
+                <div className="day-name">{day}</div>
+                <div className="no-morning-classes">No Morning Classes</div>
               </div>
-            );
-          })}
+            ))}
+
+            {/* Time slots */}
+            {timeSlots.map((time, index) => (
+              <React.Fragment key={time}>
+                <div className="time-label">{formatTimeDisplay(time)}</div>
+                {weekDays.map(day => (
+                  <div key={`${day}-${time}`} className="time-slot"></div>
+                ))}
+              </React.Fragment>
+            ))}
+          </div>
+
+          {/* Schedule events overlay */}
+          <div className="events-overlay">
+            {scheduleEvents.map((event, index) => {
+              const position = getEventPosition(event);
+              if (!position) return null;
+              
+              return (
+                <div
+                  key={index}
+                  className="schedule-event"
+                  style={position}
+                >
+                  <div className="event-title">{event.subject}</div>
+                  <div className="event-instructor">{event.instructor}</div>
+                  <div className="event-location">{event.location}</div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

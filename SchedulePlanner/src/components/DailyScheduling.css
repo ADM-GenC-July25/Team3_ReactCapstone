@@ -99,7 +99,7 @@
   color: #6c757d;
 }
 
-.data_in_table {
+.table-data {
   font-weight: 600;
   color: #333;
 }
@@ -181,10 +181,26 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.calendar-container {
+  position: relative;
+  background: white;
+}
+
 .calendar-grid {
   display: grid;
   grid-template-columns: 80px repeat(5, 1fr);
   background: white;
+}
+
+.events-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 80px repeat(5, 1fr);
+  pointer-events: none;
 }
 
 .calendar-header {
@@ -243,6 +259,8 @@
   position: relative;
   z-index: 1;
   overflow: hidden;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .event-title {
