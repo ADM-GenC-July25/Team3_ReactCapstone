@@ -1,7 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Homepage.css';
+import DailyScheduling from './DailyScheduling';
 
 const Homepage = () => {
+  const [currentView, setCurrentView] = useState('home');
+
+  const handleDailySchedulingClick = () => {
+    setCurrentView('dailyScheduling');
+  };
+
+  const handleBackToHome = () => {
+    setCurrentView('home');
+  };
+
+  if (currentView === 'dailyScheduling') {
+    return <DailyScheduling onBack={handleBackToHome} />;
+  }
+
   return (
     <div className="homepage-container">
       <div className="hero-section">
@@ -21,7 +36,7 @@ const Homepage = () => {
       <div className="features-section">
         <h2>Features</h2>
         <div className="features-grid">
-          <div className="feature-card">
+          <div className="feature-card clickable" onClick={handleDailySchedulingClick}>
             <div className="feature-icon">📅</div>
             <h3>Daily Scheduling</h3>
             <p>Plan your day with 15-minute interval precision from 6 AM to 10 PM</p>

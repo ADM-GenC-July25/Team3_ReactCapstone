@@ -84,6 +84,21 @@
   line-height: 1.6;
 }
 
+.feature-card.clickable {
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.feature-card.clickable:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  background-color: #f8f9ff;
+}
+
+.feature-card.clickable:active {
+  transform: translateY(-2px);
+}
+
 .getting-started-section {
   background: #f8f9fa;
   padding: 3rem;
