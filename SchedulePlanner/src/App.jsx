@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import Homepage from './components/Homepage'
 import Schedule from './components/Schedule'
+import CourseSelection from './components/CourseSelection'
 
 function App() {
   const [activeTab, setActiveTab] = useState('home')
@@ -12,6 +13,8 @@ function App() {
         return <Homepage />
       case 'schedule':
         return <Schedule />
+      case 'courses':
+        return <CourseSelection />
       default:
         return <Homepage />
     }
@@ -36,6 +39,12 @@ function App() {
               onClick={() => setActiveTab('schedule')}
             >
               Schedule
+            </button>
+            <button 
+              className={`tab-button ${activeTab === 'courses' ? 'active' : ''}`}
+              onClick={() => setActiveTab('courses')}
+            >
+              Courses
             </button>
           </nav>
         </div>
