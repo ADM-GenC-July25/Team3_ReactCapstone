@@ -327,4 +327,175 @@
 
 .schedule-event[style*="#4CAF50"] {
   background-color: #4CAF50 !important;
+}
+
+/* Color Picker Styles */
+.color-picker-container {
+  position: relative;
+  display: inline-block;
+}
+
+.color-preview {
+  width: 30px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  display: block;
+}
+
+.color-preview:hover {
+  border-color: #007bff;
+}
+
+/* Modal Overlay */
+.color-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Modal Container */
+.color-picker-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  min-width: 300px;
+  max-width: 400px;
+  animation: slideIn 0.2s ease-out;
+}
+
+.color-picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.color-picker-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.color-picker-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.color-picker-close:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.color-palette {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.color-option {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  justify-self: center;
+  display: block;
+  box-sizing: border-box;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.color-option.selected {
+  border-color: #007bff;
+  border-width: 4px;
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.custom-color-section {
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.custom-color-input {
+  width: 100%;
+  height: 50px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.custom-color-input:hover {
+  border-color: #007bff;
+}
+
+.color-picker-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  display: block;
+  font-weight: 500;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Remove old dropdown styles */
+.color-picker-dropdown {
+  display: none;
+}
+
+.class-table td .color-picker-container {
+  position: relative;
+}
+
+.class-table td .color-picker-dropdown {
+  display: none;
 } 

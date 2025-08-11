@@ -5,6 +5,134 @@ const DailyScheduling = ({ onBack }) => {
   const [currentWeek, setCurrentWeek] = useState(2);
   const totalWeeks = 15;
 
+  // State for custom colors - maps class ID to color
+  const [customColors, setCustomColors] = useState({
+    1: '#4CAF50', // Java - default green
+    2: '#FF9800', // Hackerrank - default orange
+    3: '#2196F3'  // Emerging Talent Bootcamp - default blue
+  });
+
+  // Predefined color palette for easy selection
+  const colorPalette = [
+    '#4CAF50', // Green
+    '#FF9800', // Orange
+    '#2196F3', // Blue
+    '#9C27B0', // Purple
+    '#F44336', // Red
+    '#FF5722', // Deep Orange
+    '#795548', // Brown
+    '#607D8B', // Blue Grey
+    '#E91E63', // Pink
+    '#00BCD4', // Cyan
+    '#8BC34A', // Light Green
+    '#FFC107'  // Amber
+  ];
+
+  // Function to update color for a specific class
+  const updateClassColor = (classId, newColor) => {
+    setCustomColors(prev => ({
+      ...prev,
+      [classId]: newColor
+    }));
+  };
+
+  // Color Picker Component
+  const ColorPicker = ({ classId, currentColor, onColorChange }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    // Close color picker when clicking outside or pressing escape
+    React.useEffect(() => {
+      const handleEscape = (event) => {
+        if (event.key === 'Escape') {
+          setIsOpen(false);
+        }
+      };
+
+      const handleClickOutside = (event) => {
+        if (event.target.classList.contains('color-picker-overlay')) {
+          setIsOpen(false);
+        }
+      };
+
+      if (isOpen) {
+        document.addEventListener('keydown', handleEscape);
+        document.addEventListener('mousedown', handleClickOutside);
+      }
+
+      return () => {
+        document.removeEventListener('keydown', handleEscape);
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, [isOpen]);
+
+    const handleColorSelect = (color) => {
+      onColorChange(classId, color);
+      setIsOpen(false);
+    };
+
+    const handleCustomColorChange = (e) => {
+      onColorChange(classId, e.target.value);
+    };
+
+    const getSubjectName = () => {
+      const classItem = classes.find(cls => cls.id === classId);
+      return classItem ? classItem.subject : 'Class';
+    };
+
+    return (
+      <>
+        <div className="color-picker-container">
+          <div 
+            className="color-preview"
+            style={{ backgroundColor: currentColor }}
+            onClick={() => setIsOpen(true)}
+            title="Click to change color"
+          />
+        </div>
+        
+        {isOpen && (
+          <div className="color-picker-overlay">
+            <div className="color-picker-modal">
+              <div className="color-picker-header">
+                <h3 className="color-picker-title">Choose Color for {getSubjectName()}</h3>
+                <button 
+                  className="color-picker-close"
+                  onClick={() => setIsOpen(false)}
+                  title="Close"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <label className="color-picker-label">Select from palette:</label>
+              <div className="color-palette">
+                {colorPalette.map(color => (
+                  <div
+                    key={color}
+                    className={`color-option ${currentColor === color ? 'selected' : ''}`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => handleColorSelect(color)}
+                    title={color}
+                  />
+                ))}
+              </div>
+              
+              <div className="custom-color-section">
+                <label className="color-picker-label">Or choose custom color:</label>
+                <input
+                  type="color"
+                  value={currentColor}
+                  onChange={handleCustomColorChange}
+                  className="custom-color-input"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
   // Example class data based on the image
   const classes = [
     {
@@ -17,7 +145,7 @@ const DailyScheduling = ({ onBack }) => {
       seatsOpen: 16,
       waitlistSeats: 0,
       waitlistOpen: 10,
-      schedule: 'W 17:30am - 21:00pm',
+      schedule: 'M W => 17:30am - 21:00pm => 12 weeks',
       location: 'Microsoft Teams'
     },
     {
@@ -30,7 +158,7 @@ const DailyScheduling = ({ onBack }) => {
       seatsOpen: 15,
       waitlistSeats: 0,
       waitlistOpen: 15,
-      schedule: 'T 7:00pm - 9:45pm',
+      schedule: 'T => 7:00pm - 9:45pm => 15 weeks',
       location: 'Microsoft Teams'
     },
     {
@@ -43,7 +171,7 @@ const DailyScheduling = ({ onBack }) => {
       seatsOpen: 14,
       waitlistSeats: 0,
       waitlistOpen: 20,
-      schedule: 'M 1:00pm - 3:15pm',
+      schedule: 'T Th => 1:00pm - 3:15pm => 10 weeks',
       location: 'Microsoft Teams'
     }
   ];
@@ -60,13 +188,14 @@ const DailyScheduling = ({ onBack }) => {
   // Example schedule events
   const scheduleEvents = [
     {
-      day: 'Wednesday',
+      day: ['Monday', 'Wednesday'],
       startTime: '17:30',
       endTime: '21:00',
       subject: 'Java',
       instructor: 'Taryn Ernd',
       location: 'Microsoft Teams',
-      color: '#4CAF50'
+      classId: 1,
+      weeks: 12
     },
     {
       day: 'Tuesday',
@@ -75,16 +204,18 @@ const DailyScheduling = ({ onBack }) => {
       subject: 'Hackerrank',
       instructor: 'Antoinette Saade',
       location: 'Microsoft Teams',
-      color: '#FF9800'
+      classId: 2,
+      weeks: 15
     },
     {
-      day: 'Tuesday',
+      day: ['Tuesday', 'Thursday'],
       startTime: '08:00',
       endTime: '11:15',
       subject: 'Emerging Talent Bootcamp',
       instructor: 'Akshat Sharma',
       location: 'Microsoft Teams',
-      color: '#2196F3'
+      classId: 3,
+      weeks: 10
     }
   ];
 
@@ -97,7 +228,7 @@ const DailyScheduling = ({ onBack }) => {
   };
 
   const getWeekDateRange = (weekNumber) => {
-    const startDate = new Date(2025, 8, 1); // September 1, 2025
+    const startDate = new Date(2025, 8, 1); 
     const weekStart = new Date(startDate);
     weekStart.setDate(startDate.getDate() + (weekNumber - 1) * 7);
     const weekEnd = new Date(weekStart);
@@ -149,8 +280,12 @@ const DailyScheduling = ({ onBack }) => {
     );
   };
 
-  const getEventPosition = (event) => {
-    const dayIndex = weekDays.indexOf(event.day);
+  const getEventPosition = (event, specificDay = null) => {
+    // Handle both single day (string) and multiple days (array)
+    const days = Array.isArray(event.day) ? event.day : [event.day];
+    const targetDay = specificDay || days[0];
+    
+    const dayIndex = weekDays.indexOf(targetDay);
     const startIndex = timeSlots.indexOf(event.startTime);
     const endIndex = timeSlots.indexOf(event.endTime);
     
@@ -162,8 +297,43 @@ const DailyScheduling = ({ onBack }) => {
       gridColumn: dayIndex + 2, // +2 because first column is time labels
       gridRowStart: startIndex + 2, // +2 because first row is headers
       gridRowEnd: endIndex + 2,
-      backgroundColor: event.color
+      backgroundColor: customColors[event.classId] || '#E0E0E0' // Use custom color or a default
     };
+  };
+
+  const isEventActiveInWeek = (event, weekNumber) => {
+    // If weeks property is not specified, default to showing for all weeks
+    if (!event.weeks) return true;
+    
+    // Event is active if current week is within the event's duration
+    return weekNumber <= event.weeks;
+  };
+
+  const renderEventForAllDays = (event, index) => {
+    // Check if event should be shown in current week
+    if (!isEventActiveInWeek(event, currentWeek)) {
+      return null;
+    }
+
+    // Handle both single day (string) and multiple days (array)
+    const days = Array.isArray(event.day) ? event.day : [event.day];
+    
+    return days.map((day, dayIndex) => {
+      const position = getEventPosition(event, day);
+      if (!position) return null;
+      
+      return (
+        <div
+          key={`${index}-${dayIndex}`}
+          className="schedule-event"
+          style={position}
+        >
+          <div className="event-title">{event.subject}</div>
+          <div className="event-instructor">{event.instructor}</div>
+          <div className="event-location">{event.location}</div>
+        </div>
+      );
+    }).filter(Boolean); // Remove null entries
   };
 
   return (
@@ -193,6 +363,7 @@ const DailyScheduling = ({ onBack }) => {
               <th>Waitlist Seats</th>
               <th>Waitlist Open</th>
               <th>Schedule & Location</th>
+              <th>Color</th>
             </tr>
           </thead>
           <tbody>
@@ -227,6 +398,13 @@ const DailyScheduling = ({ onBack }) => {
                 <td>
                   <span className='table-data'>{cls.schedule}</span><br/>
                   <span className='table-data'>{cls.location}</span>
+                </td>
+                <td>
+                  <ColorPicker
+                    classId={cls.id}
+                    currentColor={customColors[cls.id]}
+                    onColorChange={updateClassColor}
+                  />
                 </td>
               </tr>
             ))}
@@ -263,20 +441,7 @@ const DailyScheduling = ({ onBack }) => {
           {/* Schedule events overlay */}
           <div className="events-overlay">
             {scheduleEvents.map((event, index) => {
-              const position = getEventPosition(event);
-              if (!position) return null;
-              
-              return (
-                <div
-                  key={index}
-                  className="schedule-event"
-                  style={position}
-                >
-                  <div className="event-title">{event.subject}</div>
-                  <div className="event-instructor">{event.instructor}</div>
-                  <div className="event-location">{event.location}</div>
-                </div>
-              );
+              return renderEventForAllDays(event, index);
             })}
           </div>
         </div>
