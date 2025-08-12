@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './TimeBlocks.css';
+import { useSchedule } from '../contexts/ScheduleContext';
 
 const TimeBlocks = () => {
   const [currentWeek, setCurrentWeek] = useState(2);
@@ -14,49 +15,8 @@ const TimeBlocks = () => {
     description: ''
   });
 
-  // Initial time blocks data
-  const [timeBlocks, setTimeBlocks] = useState([
-    {
-      id: 1,
-      title: 'Chess Club',
-      day: 'Monday',
-      startTime: '15:30',
-      endTime: '17:00',
-      type: 'club',
-      description: 'Weekly chess club meeting',
-      color: '#9C27B0'
-    },
-    {
-      id: 2,
-      title: 'Part-time Job',
-      day: 'Wednesday',
-      startTime: '14:00',
-      endTime: '18:00',
-      type: 'job',
-      description: 'Customer service at local store',
-      color: '#FF5722'
-    },
-    {
-      id: 3,
-      title: 'Study Break',
-      day: 'Friday',
-      startTime: '12:00',
-      endTime: '13:00',
-      type: 'break',
-      description: 'Lunch and relaxation',
-      color: '#4CAF50'
-    },
-    {
-      id: 4,
-      title: 'Gym Session',
-      day: 'Tuesday',
-      startTime: '18:00',
-      endTime: '19:30',
-      type: 'personal',
-      description: 'Evening workout',
-      color: '#FF9800'
-    }
-  ]);
+  // Use centralized data from context
+  const { timeBlocks, addTimeBlock, removeTimeBlock, conflicts, clearConflicts } = useSchedule();
 
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const timeSlots = [
@@ -110,28 +70,30 @@ const TimeBlocks = () => {
   };
 
   const handleAddTimeBlock = () => {
-    const newId = Math.max(...timeBlocks.map(tb => tb.id), 0) + 1;
     const color = typeColors[newTimeBlock.type] || typeColors.other;
-    
-    setTimeBlocks([...timeBlocks, {
+    const timeBlockWithColor = {
       ...newTimeBlock,
-      id: newId,
       color
-    }]);
+    };
     
-    setNewTimeBlock({
-      title: '',
-      day: 'Monday',
-      startTime: '09:00',
-      endTime: '10:00',
-      type: 'club',
-      description: ''
-    });
-    setShowAddForm(false);
+    const result = addTimeBlock(timeBlockWithColor);
+    
+    if (result.success) {
+      setNewTimeBlock({
+        title: '',
+        day: 'Monday',
+        startTime: '09:00',
+        endTime: '10:00',
+        type: 'club',
+        description: ''
+      });
+      setShowAddForm(false);
+    }
+    // If there are conflicts, they will be displayed in the UI
   };
 
   const handleDeleteTimeBlock = (id) => {
-    setTimeBlocks(timeBlocks.filter(tb => tb.id !== id));
+    removeTimeBlock(id);
   };
 
   const renderWeekSelector = () => {
@@ -277,6 +239,29 @@ const TimeBlocks = () => {
               Add Time Block
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Conflict Display */}
+      {conflicts.length > 0 && (
+        <div className="conflict-alert">
+          <h3>⚠️ Scheduling Conflict Detected!</h3>
+          <p>The following items conflict with your new time block:</p>
+          <div className="conflict-list">
+            {conflicts.map((conflict, index) => (
+              <div key={index} className="conflict-item">
+                <strong>{conflict.name || conflict.title}</strong>
+                <span>{conflict.day || (Array.isArray(conflict.days) ? conflict.days.join(', ') : conflict.days)}</span>
+                <span>{conflict.startTime} - {conflict.endTime}</span>
+              </div>
+            ))}
+          </div>
+          <button 
+            className="clear-conflicts-button"
+            onClick={clearConflicts}
+          >
+            Dismiss
+          </button>
         </div>
       )}
 

@@ -1,15 +1,34 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './Courses.css';
 
-export default function CourseList({ courseList, setCourseList, setIsAddCourses }) {
+export default function CourseList({ courseList, setCourseList, setIsAddCourses, onRemoveCourse }) {
 
     const [selectedCourse, setSelectedCourse] = useState({});
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [editingCourse, setEditingCourse] = useState({});
 
     function handleDelete(id) {
-        const updatedCourseList = courseList.map(course =>
-            course.id === id ? { ...course, isSelected: false } : course
-        );
-        setCourseList(updatedCourseList);
+        if (onRemoveCourse) {
+            onRemoveCourse(id);
+        } else {
+            const updatedCourseList = courseList.map(course =>
+                course.id === id ? { ...course, isSelected: false } : course
+            );
+            setCourseList(updatedCourseList);
+        }
+    }
+
+    function handleEdit(course) {
+        setEditingCourse(course);
+        setShowEditForm(true);
+    }
+
+    function handleUpdateCourse(updatedCourse) {
+        if (setCourseList && typeof setCourseList === 'function') {
+            setCourseList(updatedCourse.id, updatedCourse);
+        }
+        setShowEditForm(false);
+        setEditingCourse({});
     }
 
     return (
@@ -158,6 +177,162 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
                     </div>
                 </div>
             </div>
+
+
+
+            {/* Edit Course Form */}
+            {showEditForm && (
+                <div className="edit-form">
+                    <h3>Edit Course</h3>
+                    <div className="form-grid">
+                        <div className="form-group">
+                            <label>Course Name:</label>
+                            <input
+                                type="text"
+                                value={editingCourse.name || ''}
+                                onChange={(e) => setEditingCourse({...editingCourse, name: e.target.value})}
+                                placeholder="Course name"
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Subject:</label>
+                            <input
+                                type="text"
+                                value={editingCourse.subject || ''}
+                                onChange={(e) => setEditingCourse({...editingCourse, subject: e.target.value})}
+                                placeholder="Subject code"
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Course Number:</label>
+                            <input
+                                type="text"
+                                value={editingCourse.course || ''}
+                                onChange={(e) => setEditingCourse({...editingCourse, course: e.target.value})}
+                                placeholder="Course number"
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Section:</label>
+                            <input
+                                type="text"
+                                value={editingCourse.section || ''}
+                                onChange={(e) => setEditingCourse({...editingCourse, section: e.target.value})}
+                                placeholder="Section number"
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Days:</label>
+                            <select
+                                multiple
+                                value={editingCourse.days || []}
+                                onChange={(e) => {
+                                    const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+                                    setEditingCourse({...editingCourse, days: selectedOptions});
+                                }}
+                            >
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                            </select>
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Start Time:</label>
+                            <input
+                                type="time"
+                                value={editingCourse.startTime || ''}
+                                onChange={(e) => setEditingCourse({...editingCourse, startTime: e.target.value})}
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>End Time:</label>
+                            <input
+                                type="time"
+                                value={editingCourse.endTime || ''}
+                                onChange={(e) => setEditingCourse({...editingCourse, endTime: e.target.value})}
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Room:</label>
+                            <input
+                                type="text"
+                                value={editingCourse.room || ''}
+                                onChange={(e) => setEditingCourse({...editingCourse, room: e.target.value})}
+                                placeholder="Room number"
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Instructor:</label>
+                            <input
+                                type="text"
+                                value={editingCourse.instructor || ''}
+                                onChange={(e) => setEditingCourse({...editingCourse, instructor: e.target.value})}
+                                placeholder="Instructor name"
+                            />
+                        </div>
+                        
+                        <div className="form-group full-width">
+                            <label>Description:</label>
+                            <textarea
+                                value={editingCourse.courseDescription || ''}
+                                onChange={(e) => setEditingCourse({...editingCourse, courseDescription: e.target.value})}
+                                placeholder="Course description"
+                                rows="3"
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Color:</label>
+                            <input
+                                type="color"
+                                value={editingCourse.color || '#4CAF50'}
+                                onChange={(e) => setEditingCourse({...editingCourse, color: e.target.value})}
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Weeks:</label>
+                            <input
+                                type="number"
+                                value={editingCourse.weeks || 15}
+                                onChange={(e) => setEditingCourse({...editingCourse, weeks: parseInt(e.target.value)})}
+                                min="1"
+                                max="20"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="form-actions">
+                        <button 
+                            className="save-button"
+                            onClick={() => handleUpdateCourse(editingCourse)}
+                        >
+                            Update Course
+                        </button>
+                        <button 
+                            className="cancel-button"
+                            onClick={() => {
+                                setShowEditForm(false);
+                                setEditingCourse({});
+                            }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
+
+
 
         </>
     );

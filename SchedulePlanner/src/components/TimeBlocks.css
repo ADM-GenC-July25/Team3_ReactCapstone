@@ -69,6 +69,74 @@
   border-left: 4px solid #9C27B0;
 }
 
+/* Conflict Alert */
+.conflict-alert {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #f39c12;
+}
+
+.conflict-alert h3 {
+  margin: 0 0 1rem 0;
+  color: #856404;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.conflict-alert p {
+  margin: 0 0 1rem 0;
+  color: #856404;
+  font-weight: 500;
+}
+
+.conflict-list {
+  margin-bottom: 1rem;
+}
+
+.conflict-item {
+  background: white;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ffeaa7;
+}
+
+.conflict-item strong {
+  color: #d63031;
+  font-weight: 600;
+}
+
+.conflict-item span {
+  color: #636e72;
+  font-size: 0.9rem;
+}
+
+.clear-conflicts-button {
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.clear-conflicts-button:hover {
+  background-color: #e67e22;
+  transform: translateY(-1px);
+}
+
 .add-form h3 {
   margin: 0 0 1.5rem 0;
   color: #333;

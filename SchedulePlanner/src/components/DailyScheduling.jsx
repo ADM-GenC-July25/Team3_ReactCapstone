@@ -1,16 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './DailyScheduling.css';
+import { useSchedule } from '../contexts/ScheduleContext';
 
 const DailyScheduling = ({ onBack }) => {
   const [currentWeek, setCurrentWeek] = useState(2);
   const totalWeeks = 15;
+  
+  // Use centralized data from context
+  const { courses, timeBlocks, getAllScheduleItems } = useSchedule();
 
   // State for custom colors - maps class ID to color
-  const [customColors, setCustomColors] = useState({
-    1: '#4CAF50', // Java - default green
-    2: '#FF9800', // Hackerrank - default orange
-    3: '#2196F3'  // Emerging Talent Bootcamp - default blue
+  const [customColors, setCustomColors] = useState(() => {
+    const initialColors = {};
+    // Initialize colors for courses
+    courses.forEach(course => {
+      initialColors[course.id] = course.color;
+    });
+    // Initialize colors for time blocks
+    timeBlocks.forEach(block => {
+      initialColors[block.id] = block.color;
+    });
+    return initialColors;
   });
+
+  // Update colors when courses or time blocks change
+  useEffect(() => {
+    const newColors = {};
+    // Update colors for courses
+    courses.forEach(course => {
+      newColors[course.id] = course.color;
+    });
+    // Update colors for time blocks
+    timeBlocks.forEach(block => {
+      newColors[block.id] = block.color;
+    });
+    setCustomColors(newColors);
+  }, [courses, timeBlocks]);
 
   // Predefined color palette for easy selection
   const colorPalette = [
@@ -75,8 +100,16 @@ const DailyScheduling = ({ onBack }) => {
     };
 
     const getSubjectName = () => {
-      const classItem = classes.find(cls => cls.id === classId);
-      return classItem ? classItem.subject : 'Class';
+      // Check both courses and time blocks
+      const courseItem = courses.find(course => course.id === classId);
+      const timeBlockItem = timeBlocks.find(block => block.id === classId);
+      
+      if (courseItem) {
+        return courseItem.subject || courseItem.name;
+      } else if (timeBlockItem) {
+        return timeBlockItem.title;
+      }
+      return 'Class';
     };
 
     return (
@@ -133,48 +166,8 @@ const DailyScheduling = ({ onBack }) => {
     );
   };
 
-  // Example class data based on the image
-  const classes = [
-    {
-      id: 1,
-      status: 'Enrolled',
-      class: '10000',
-      subject: 'Java',
-      course: '201',
-      section: '003',
-      seatsOpen: 16,
-      waitlistSeats: 0,
-      waitlistOpen: 10,
-      schedule: 'M W => 17:30am - 21:00pm => 12 weeks',
-      location: 'Microsoft Teams'
-    },
-    {
-      id: 2,
-      status: 'Enrolled',
-      class: '20000',
-      subject: 'Hackerrank',
-      course: '202',
-      section: '206',
-      seatsOpen: 15,
-      waitlistSeats: 0,
-      waitlistOpen: 15,
-      schedule: 'T => 7:00pm - 9:45pm => 15 weeks',
-      location: 'Microsoft Teams'
-    },
-    {
-      id: 3,
-      status: 'Not Enrolled',
-      class: '30000',
-      subject: 'Emerging Talent Bootcamp',
-      course: '203',
-      section: '005',
-      seatsOpen: 14,
-      waitlistSeats: 0,
-      waitlistOpen: 20,
-      schedule: 'T Th => 1:00pm - 3:15pm => 10 weeks',
-      location: 'Microsoft Teams'
-    }
-  ];
+  // Use centralized course data from context
+  const classes = courses;
 
   // Calendar data based on the image
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -185,39 +178,46 @@ const DailyScheduling = ({ onBack }) => {
     '21:00', '21:30', '21:45', '22:00'
   ];
 
-  // Example schedule events
-  const scheduleEvents = [
-    {
-      day: ['Monday', 'Wednesday'],
-      startTime: '17:30',
-      endTime: '21:00',
-      subject: 'Java',
-      instructor: 'Taryn Ernd',
-      location: 'Microsoft Teams',
-      classId: 1,
-      weeks: 12
-    },
-    {
-      day: 'Tuesday',
-      startTime: '19:00',
-      endTime: '21:45',
-      subject: 'Hackerrank',
-      instructor: 'Antoinette Saade',
-      location: 'Microsoft Teams',
-      classId: 2,
-      weeks: 15
-    },
-    {
-      day: ['Tuesday', 'Thursday'],
-      startTime: '08:00',
-      endTime: '11:15',
-      subject: 'Emerging Talent Bootcamp',
-      instructor: 'Akshat Sharma',
-      location: 'Microsoft Teams',
-      classId: 3,
-      weeks: 10
-    }
-  ];
+  // Generate schedule events from centralized data using useMemo
+  const scheduleEvents = useMemo(() => {
+    console.log('Regenerating schedule events with:', { courses, timeBlocks });
+    
+    const courseEvents = courses.map(course => ({
+      days: course.days,
+      startTime: course.startTime,
+      endTime: course.endTime,
+      subject: course.subject,
+      instructor: course.instructor,
+      location: course.room,
+      classId: course.id,
+      weeks: course.weeks,
+      color: course.color
+    }));
+    
+    const timeBlockEvents = timeBlocks.map(block => ({
+      days: [block.day], // Convert single day to array
+      startTime: block.startTime,
+      endTime: block.endTime,
+      subject: block.title,
+      instructor: block.type,
+      location: block.description,
+      classId: block.id,
+      weeks: 15,
+      color: block.color
+    }));
+    
+    const allEvents = [...courseEvents, ...timeBlockEvents];
+    console.log('Generated events:', allEvents);
+    
+    return allEvents;
+  }, [courses, timeBlocks]);
+
+  // Test data flow after scheduleEvents is defined
+  console.log('DailyScheduling - Courses:', courses);
+  console.log('DailyScheduling - Time Blocks:', timeBlocks);
+  console.log('DailyScheduling - Schedule Events:', scheduleEvents);
+
+
 
   const formatTimeDisplay = (time24) => {
     const [hours, minutes] = time24.split(':');
@@ -281,15 +281,24 @@ const DailyScheduling = ({ onBack }) => {
   };
 
   const getEventPosition = (event, specificDay = null) => {
-    // Handle both single day (string) and multiple days (array)
-    const days = Array.isArray(event.day) ? event.day : [event.day];
+    // All events should now have a days array
+    const days = event.days;
     const targetDay = specificDay || days[0];
     
     const dayIndex = weekDays.indexOf(targetDay);
     const startIndex = timeSlots.indexOf(event.startTime);
     const endIndex = timeSlots.indexOf(event.endTime);
     
+    // Debug logging for positioning issues
     if (dayIndex === -1 || startIndex === -1 || endIndex === -1) {
+      console.log('Positioning failed for event:', event, {
+        targetDay,
+        dayIndex,
+        startTime: event.startTime,
+        startIndex,
+        endTime: event.endTime,
+        endIndex
+      });
       return null;
     }
     
@@ -297,7 +306,7 @@ const DailyScheduling = ({ onBack }) => {
       gridColumn: dayIndex + 2, // +2 because first column is time labels
       gridRowStart: startIndex + 2, // +2 because first row is headers
       gridRowEnd: endIndex + 2,
-      backgroundColor: customColors[event.classId] || '#E0E0E0' // Use custom color or a default
+      backgroundColor: customColors[event.classId] || event.color || '#E0E0E0' // Use custom color, event color, or default
     };
   };
 
@@ -315,12 +324,18 @@ const DailyScheduling = ({ onBack }) => {
       return null;
     }
 
-    // Handle both single day (string) and multiple days (array)
-    const days = Array.isArray(event.day) ? event.day : [event.day];
+    // All events should now have a days array
+    const days = event.days;
+    
+    // Debug logging for event rendering
+    console.log('Rendering event:', event, 'for days:', days);
     
     return days.map((day, dayIndex) => {
       const position = getEventPosition(event, day);
-      if (!position) return null;
+      if (!position) {
+        console.log('Position failed for day:', day, 'event:', event);
+        return null;
+      }
       
       return (
         <div
@@ -348,61 +363,103 @@ const DailyScheduling = ({ onBack }) => {
       </div>
 
       <h2>Potential Schedule</h2>
+      
+      {/* Debug Info */}
+      <div style={{ background: '#f0f0f0', padding: '10px', marginBottom: '20px', borderRadius: '4px', fontSize: '12px' }}>
+        <strong>Debug Info:</strong><br/>
+        Courses: {courses.length} | Time Blocks: {timeBlocks.length} | Total Events: {scheduleEvents.length}<br/>
+        Current Week: {currentWeek} | Week Range: {getWeekDateRange(currentWeek)}<br/>
+        <button 
+          onClick={() => {
+            console.log('Current courses:', courses);
+            console.log('Current time blocks:', timeBlocks);
+            console.log('Current schedule events:', scheduleEvents);
+          }}
+          style={{ marginTop: '10px', padding: '5px 10px' }}
+        >
+          Log Data to Console
+        </button>
+      </div>
 
-      {/* Class Table */}
+      {/* Schedule Table */}
       <div className="class-table-section">
         <table className="class-table">
           <thead>
             <tr>
-              <th>Status</th>
-              <th>Class</th>
-              <th>Subject</th>
-              <th>Course</th>
-              <th>Section</th>
-              <th>Seats Open</th>
-              <th>Waitlist Seats</th>
-              <th>Waitlist Open</th>
-              <th>Schedule & Location</th>
+              <th>Type</th>
+              <th>Name</th>
+              <th>Subject/Category</th>
+              <th>Course/Section</th>
+              <th>Days</th>
+              <th>Time</th>
+              <th>Location</th>
               <th>Color</th>
             </tr>
           </thead>
           <tbody>
-            {classes.map(cls => (
-              <tr key={cls.id}>
+            {/* Courses */}
+            {courses.map(course => (
+              <tr key={`course-${course.id}`}>
                 <td>
-                  <span className={`status ${cls.status.toLowerCase().replace(' ', '-')}`}>
-                    {cls.status === 'Enrolled' ? '●' : '○'} {cls.status}
+                  <span className={`type-badge course ${course.isSelected ? 'enrolled' : 'not-enrolled'}`}>
+                    {course.isSelected ? 'Enrolled' : 'Available'}
                   </span>
                 </td>
                 <td>
-                  <span className='table-data'>{cls.class}</span>
+                  <span className='table-data'>{course.name}</span>
                 </td>
                 <td>
-                  <span className='table-data'>{cls.subject}</span>
+                  <span className='table-data'>{course.subject}</span>
                 </td>
                 <td>
-                  <span className='table-data'>{cls.course}</span>
+                  <span className='table-data'>{course.course}-{course.section}</span>
                 </td>
                 <td>
-                  <span className='table-data'>{cls.section}</span>
+                  <span className='table-data'>{Array.isArray(course.days) ? course.days.join(', ') : course.days}</span>
                 </td>
                 <td>
-                  <span className='table-data'>{cls.seatsOpen}</span>
+                  <span className='table-data'>{course.startTime} - {course.endTime}</span>
                 </td>
                 <td>
-                  <span className='table-data'>{cls.waitlistSeats}</span>
-                </td>
-                <td>
-                  <span className='table-data'>{cls.waitlistOpen}</span>
-                </td>
-                <td>
-                  <span className='table-data'>{cls.schedule}</span><br/>
-                  <span className='table-data'>{cls.location}</span>
+                  <span className='table-data'>{course.room}</span>
                 </td>
                 <td>
                   <ColorPicker
-                    classId={cls.id}
-                    currentColor={customColors[cls.id]}
+                    classId={course.id}
+                    currentColor={customColors[course.id]}
+                    onColorChange={updateClassColor}
+                  />
+                </td>
+              </tr>
+            ))}
+            {/* Time Blocks */}
+            {timeBlocks.map(block => (
+              <tr key={`block-${block.id}`}>
+                <td>
+                  <span className="type-badge timeblock">{block.type}</span>
+                </td>
+                <td>
+                  <span className='table-data'>{block.title}</span>
+                </td>
+                <td>
+                  <span className='table-data'>{block.type}</span>
+                </td>
+                <td>
+                  <span className='table-data'>-</span>
+                </td>
+                <td>
+                  <span className='table-data'>{block.day}</span>
+                </td>
+                <td>
+                  <span className='table-data'>{block.startTime} - {block.endTime}</span>
+                </td>
+                <td>
+                  <span className='table-data'>{block.description}</span>
+                </td>
+                <td>
+                  <ColorPicker
+                    classId={block.id}
+                    currentColor={customColors[block.id]}
                     onColorChange={updateClassColor}
                   />
                 </td>
@@ -441,7 +498,13 @@ const DailyScheduling = ({ onBack }) => {
           {/* Schedule events overlay */}
           <div className="events-overlay">
             {scheduleEvents.map((event, index) => {
-              return renderEventForAllDays(event, index);
+              const renderedEvents = renderEventForAllDays(event, index);
+              if (renderedEvents && renderedEvents.length > 0) {
+                console.log(`Successfully rendered ${renderedEvents.length} instances of event:`, event);
+              } else {
+                console.log(`Failed to render event:`, event);
+              }
+              return renderedEvents;
             })}
           </div>
         </div>

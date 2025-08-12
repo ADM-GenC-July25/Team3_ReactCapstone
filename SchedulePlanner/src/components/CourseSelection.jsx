@@ -1,25 +1,28 @@
 import { useState } from 'react';
 import CourseList from './CourseList';
 import AddCourses from './AddCourses';
-import SampleCourses from './SampleCourses';
+import { useSchedule } from '../contexts/ScheduleContext';
 
 export default function CourseSelection() {
-    const [courseList, setCourseList] = useState(SampleCourses);
+    const { courses, addCourse, updateCourse, removeCourse, conflicts, clearConflicts } = useSchedule();
     const [isAddCourses, setIsAddCourses] = useState(false);
 
     return (
         <>
             <CourseList
-                courseList={courseList}
-                setCourseList={setCourseList}
+                courseList={courses}
+                setCourseList={updateCourse}
                 setIsAddCourses={setIsAddCourses}
                 isAddCourses={isAddCourses}
+                onRemoveCourse={removeCourse}
             />
             {isAddCourses && (
                 <AddCourses
-                    courseList={courseList}
-                    setCourseList={setCourseList}
+                    courseList={courses}
+                    setCourseList={addCourse}
                     setIsAddCourses={setIsAddCourses}
+                    conflicts={conflicts}
+                    clearConflicts={clearConflicts}
                 />
             )}
         </>

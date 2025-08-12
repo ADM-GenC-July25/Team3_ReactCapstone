@@ -1,21 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './Homepage.css';
-import DailyScheduling from './DailyScheduling';
 
-const Homepage = () => {
-  const [currentView, setCurrentView] = useState('home');
-
-  const handleDailySchedulingClick = () => {
-    setCurrentView('dailyScheduling');
+const Homepage = ({ onNavigate }) => {
+  const handleNavigateToTab = (tabName) => {
+    if (onNavigate) {
+      onNavigate(tabName);
+    }
   };
-
-  const handleBackToHome = () => {
-    setCurrentView('home');
-  };
-
-  if (currentView === 'dailyScheduling') {
-    return <DailyScheduling onBack={handleBackToHome} />;
-  }
 
   return (
     <div className="homepage-container">
@@ -36,26 +27,22 @@ const Homepage = () => {
       <div className="features-section">
         <h2>Features</h2>
         <div className="features-grid">
-          <div className="feature-card clickable" onClick={handleDailySchedulingClick}>
+          <div className="feature-card clickable" onClick={() => handleNavigateToTab('schedule')}>
             <div className="feature-icon">📅</div>
             <h3>View Schedule</h3>
             <p>View your day</p>
           </div>
-          <div className="feature-card">
-            <div className="feature-icon">🎨</div>
-            <h3>Color Coding</h3>
-            <p>Organize classes and events with customizable color schemes</p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">📍</div>
-            <h3>Room & Instructor Info</h3>
-            <p>Keep track of locations and instructors for each scheduled item</p>
-          </div>
-          <div className="feature-card">
+          <div className="feature-card clickable" onClick={() => handleNavigateToTab('timeblocks')}>
             <div className="feature-icon">⏰</div>
-            <h3>Generate Schedule</h3>
-            <p>Plan your day with 15-minute interval precision from 6 AM to 10 PM</p>
+            <h3>Time Blocks</h3>
+            <p>Manage your non-class activities: clubs, jobs, breaks, and personal time</p>
           </div>
+          <div className="feature-card clickable" onClick={() => handleNavigateToTab('courses')}>
+            <div className="feature-icon">📚</div>
+            <h3>Courses</h3>
+            <p>Select and manage your course schedule</p>
+          </div>
+
         </div>
       </div>
 
@@ -64,15 +51,15 @@ const Homepage = () => {
         <div className="steps">
           <div className="step">
             <span className="step-number">1</span>
-            <p>Navigate to the Schedule tab to view your daily timeline</p>
+            <p>Click "View Schedule" to see your daily timeline</p>
           </div>
           <div className="step">
             <span className="step-number">2</span>
-            <p>Add your classes, meetings, and appointments</p>
+            <p>Add your classes and courses through the Courses tab</p>
           </div>
           <div className="step">
             <span className="step-number">3</span>
-            <p>Customize colors and details for better organization</p>
+            <p>Manage your non-class activities through the Time Blocks tab</p>
           </div>
         </div>
       </div>

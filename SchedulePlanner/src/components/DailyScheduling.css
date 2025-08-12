@@ -99,6 +99,49 @@
   color: #6c757d;
 }
 
+/* Type Badges */
+.type-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: white;
+}
+
+.type-badge.course {
+  background-color: #2196F3;
+}
+
+.type-badge.timeblock {
+  background-color: #FF9800;
+}
+
+.type-badge.club {
+  background-color: #9C27B0;
+}
+
+.type-badge.job {
+  background-color: #F44336;
+}
+
+.type-badge.break {
+  background-color: #4CAF50;
+}
+
+.type-badge.personal {
+  background-color: #795548;
+}
+
+.type-badge.course.enrolled {
+  background-color: #2196F3;
+}
+
+.type-badge.course.not-enrolled {
+  background-color: #9E9E9E;
+}
+
 .table-data {
   font-weight: 600;
   color: #333;
