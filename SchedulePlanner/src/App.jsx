@@ -14,8 +14,6 @@ function App() {
         return <Homepage />
       case 'schedule':
         return <Schedule />
-      case 'courses':
-        return <CourseSelection />
       case 'timeblocks':
         return <TimeBlocks />
       default:
@@ -42,12 +40,6 @@ function App() {
               onClick={() => setActiveTab('schedule')}
             >
               Schedule
-            </button>
-            <button 
-              className={`tab-button ${activeTab === 'courses' ? 'active' : ''}`}
-              onClick={() => setActiveTab('courses')}
-            >
-              Courses
             </button>
             <button 
               className={`tab-button ${activeTab === 'timeblocks' ? 'active' : ''}`}

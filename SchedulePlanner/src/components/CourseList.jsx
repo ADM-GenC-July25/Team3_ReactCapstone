@@ -14,9 +14,14 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
 
     return (
         <>
+            <div className="course-header">
+                <h1>Courses</h1>
+                <p>Add, delete and view courses</p>
+            </div>
+
             <div className='courseListContainer'>
                 <div className='courseListHeader'>
-                    <h1>Courses</h1>
+                    <h2>Selected Courses</h2>
                     <button
                         className='btn btn-light'
                         onClick={() => setIsAddCourses(true)}

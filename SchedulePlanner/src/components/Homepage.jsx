@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './Homepage.css';
 import DailyScheduling from './DailyScheduling';
+import CourseList from './CourseList';
+import CourseSelection from './CourseSelection';
 
 const Homepage = () => {
   const [currentView, setCurrentView] = useState('home');
@@ -9,12 +11,20 @@ const Homepage = () => {
     setCurrentView('dailyScheduling');
   };
 
+  const handleCourseSelectionClick = () => {
+    setCurrentView('courseSelection');  
+  };
+
   const handleBackToHome = () => {
     setCurrentView('home');
   };
 
   if (currentView === 'dailyScheduling') {
     return <DailyScheduling onBack={handleBackToHome} />;
+  }
+
+   if (currentView === 'courseSelection') {
+    return <CourseSelection />;
   }
 
   return (
@@ -55,6 +65,11 @@ const Homepage = () => {
             <div className="feature-icon">⏰</div>
             <h3>Generate Schedule</h3>
             <p>Plan your day with 15-minute interval precision from 6 AM to 10 PM</p>
+          </div>
+          <div className="feature-card clickable" onClick={handleCourseSelectionClick}>
+            <div className="feature-icon">📚</div>
+            <h3>Course List</h3>
+            <p>Add, delete and view your courses</p>
           </div>
         </div>
       </div>
