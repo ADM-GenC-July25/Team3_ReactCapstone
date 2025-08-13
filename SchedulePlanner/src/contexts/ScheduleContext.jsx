@@ -3,10 +3,12 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 // Create the context
 const ScheduleContext = createContext();
 
-// Initial sample data - consolidated from all components
-const initialCourses = [
+// Initial sample data - unified schedule items with type identification
+const initialScheduleItems = [
+  // Courses
   {
     id: 1,
+    itemType: 'course',
     name: "Computer Science 101",
     subject: "CS",
     course: "101",
@@ -27,6 +29,7 @@ const initialCourses = [
   },
   {
     id: 2,
+    itemType: 'course',
     name: "Mathematics 205",
     subject: "MATH",
     course: "205",
@@ -47,6 +50,7 @@ const initialCourses = [
   },
   {
     id: 3,
+    itemType: 'course',
     name: "Physics Lab",
     subject: "PHYS",
     course: "101",
@@ -67,6 +71,7 @@ const initialCourses = [
   },
   {
     id: 4,
+    itemType: 'course',
     name: "English Literature",
     subject: "ENG",
     course: "201",
@@ -84,12 +89,11 @@ const initialCourses = [
     waitlistSeats: 5,
     waitlistOpen: 10,
     weeks: 15
-  }
-];
-
-const initialTimeBlocks = [
+  },
+  // Time Blocks
   {
-    id: 1,
+    id: 5,
+    itemType: 'timeBlock',
     title: 'Chess Club',
     day: 'Monday',
     startTime: '15:30',
@@ -99,7 +103,8 @@ const initialTimeBlocks = [
     color: '#9C27B0'
   },
   {
-    id: 2,
+    id: 6,
+    itemType: 'timeBlock',
     title: 'Part-time Job',
     day: 'Wednesday',
     startTime: '14:00',
@@ -109,7 +114,8 @@ const initialTimeBlocks = [
     color: '#FF5722'
   },
   {
-    id: 3,
+    id: 7,
+    itemType: 'timeBlock',
     title: 'Study Break',
     day: 'Friday',
     startTime: '12:00',
@@ -119,7 +125,8 @@ const initialTimeBlocks = [
     color: '#4CAF50'
   },
   {
-    id: 4,
+    id: 8,
+    itemType: 'timeBlock',
     title: 'Gym Session',
     day: 'Tuesday',
     startTime: '18:00',
@@ -138,8 +145,8 @@ const timeToMinutes = (time) => {
 
 const hasTimeConflict = (item1, item2) => {
   // Check if items are on the same day
-  const days1 = Array.isArray(item1.days) ? item1.days : [item1.day];
-  const days2 = Array.isArray(item2.days) ? item2.days : [item2.day];
+  const days1 = item1.itemType === 'course' ? item1.days : [item1.day];
+  const days2 = item2.itemType === 'course' ? item2.days : [item2.day];
   
   const commonDays = days1.filter(day => days2.includes(day));
   if (commonDays.length === 0) return false;
@@ -161,30 +168,31 @@ const getDetailedConflicts = (newItem, existingItems) => {
   const conflicts = findConflicts(newItem, existingItems);
   return conflicts.map(conflict => ({
     ...conflict,
-    conflictType: conflict.type ? 'Time Block' : 'Course',
+    conflictType: conflict.itemType === 'course' ? 'Course' : 'Time Block',
     conflictDetails: {
-      days: Array.isArray(conflict.days) ? conflict.days.join(', ') : conflict.day || conflict.days,
+      days: conflict.itemType === 'course' ? conflict.days.join(', ') : conflict.day,
       time: `${conflict.startTime} - ${conflict.endTime}`,
-      location: conflict.room || conflict.description || 'N/A'
+      location: conflict.itemType === 'course' ? conflict.room : conflict.description
     }
   }));
 };
 
 // Schedule Provider Component
 export const ScheduleProvider = ({ children }) => {
-  const [courses, setCourses] = useState(initialCourses);
-  const [timeBlocks, setTimeBlocks] = useState(initialTimeBlocks);
+  const [scheduleItems, setScheduleItems] = useState(initialScheduleItems);
   const [conflicts, setConflicts] = useState([]);
 
   // Add a new course with conflict detection
   const addCourse = useCallback((newCourse) => {
     const courseWithDays = {
       ...newCourse,
+      itemType: 'course',
       days: Array.isArray(newCourse.days) ? newCourse.days : [newCourse.day]
     };
     
-    // Only check against courses that are already selected/enrolled and time blocks
-    const enrolledCourses = courses.filter(course => course.isSelected);
+    // Only check against enrolled courses and time blocks
+    const enrolledCourses = scheduleItems.filter(item => item.itemType === 'course' && item.isSelected);
+    const timeBlocks = scheduleItems.filter(item => item.itemType === 'timeBlock');
     const courseConflicts = getDetailedConflicts(courseWithDays, [...enrolledCourses, ...timeBlocks]);
     
     if (courseConflicts.length > 0) {
@@ -193,95 +201,111 @@ export const ScheduleProvider = ({ children }) => {
     }
     
     // If the course already exists in the list, just mark it as selected
-    const existingCourseIndex = courses.findIndex(course => 
-      course.id === newCourse.id || 
-      (course.subject === newCourse.subject && 
-       course.course === newCourse.course && 
-       course.section === newCourse.section)
+    const existingCourseIndex = scheduleItems.findIndex(item => 
+      item.itemType === 'course' && (
+        item.id === newCourse.id || 
+        (item.subject === newCourse.subject && 
+         item.course === newCourse.course && 
+         item.section === newCourse.section)
+      )
     );
     
     if (existingCourseIndex !== -1) {
       // Update existing course to be selected
-      setCourses(prev => prev.map((course, index) => 
+      setScheduleItems(prev => prev.map((item, index) => 
         index === existingCourseIndex 
-          ? { ...course, isSelected: true, status: 'Enrolled' }
-          : course
+          ? { ...item, isSelected: true, status: 'Enrolled' }
+          : item
       ));
     } else {
       // Add new course
-      setCourses(prev => [...prev, { ...courseWithDays, id: Date.now(), isSelected: true, status: 'Enrolled' }]);
+      setScheduleItems(prev => [...prev, { ...courseWithDays, id: Date.now(), isSelected: true, status: 'Enrolled' }]);
     }
     
     setConflicts([]);
     return { success: true, conflicts: [] };
-  }, [courses, timeBlocks]);
+  }, [scheduleItems]);
 
   // Add a new time block with conflict detection
   const addTimeBlock = useCallback((newTimeBlock) => {
     const timeBlockWithDays = {
       ...newTimeBlock,
+      itemType: 'timeBlock',
       days: [newTimeBlock.day] // Time blocks are single-day
     };
     
     // Only check against enrolled courses and existing time blocks
-    const enrolledCourses = courses.filter(course => course.isSelected);
-    const timeBlockConflicts = getDetailedConflicts(timeBlockWithDays, [...enrolledCourses, ...timeBlocks]);
+    const enrolledCourses = scheduleItems.filter(item => item.itemType === 'course' && item.isSelected);
+    const existingTimeBlocks = scheduleItems.filter(item => item.itemType === 'timeBlock');
+    const timeBlockConflicts = getDetailedConflicts(timeBlockWithDays, [...enrolledCourses, ...existingTimeBlocks]);
     
     if (timeBlockConflicts.length > 0) {
       setConflicts(timeBlockConflicts);
       return { success: false, conflicts: timeBlockConflicts };
     }
     
-    setTimeBlocks(prev => [...prev, { ...newTimeBlock, id: Date.now() }]);
+    setScheduleItems(prev => [...prev, { ...newTimeBlock, id: Date.now() }]);
     setConflicts([]);
     return { success: true, conflicts: [] };
-  }, [courses, timeBlocks]);
+  }, [scheduleItems]);
 
   // Update an existing course
   const updateCourse = useCallback((courseId, updates) => {
-    setCourses(prev => prev.map(course => 
-      course.id === courseId ? { ...course, ...updates } : course
+    setScheduleItems(prev => prev.map(item => 
+      item.id === courseId && item.itemType === 'course' ? { ...item, ...updates } : item
     ));
   }, []);
 
   // Update an existing time block
   const updateTimeBlock = useCallback((timeBlockId, updates) => {
-    setTimeBlocks(prev => prev.map(block => 
-      block.id === timeBlockId ? { ...block, ...updates } : block
+    setScheduleItems(prev => prev.map(item => 
+      item.id === timeBlockId && item.itemType === 'timeBlock' ? { ...item, ...updates } : item
     ));
   }, []);
 
   // Remove a course
   const removeCourse = useCallback((courseId) => {
-    setCourses(prev => prev.filter(course => course.id !== courseId));
+    setScheduleItems(prev => prev.filter(item => !(item.id === courseId && item.itemType === 'course')));
   }, []);
 
   // Remove a time block
   const removeTimeBlock = useCallback((timeBlockId) => {
-    setTimeBlocks(prev => prev.filter(block => block.id !== timeBlockId));
+    setScheduleItems(prev => prev.filter(item => !(item.id === timeBlockId && item.itemType === 'timeBlock')));
   }, []);
 
   // Get all schedule items (courses + time blocks) for a specific day
   const getScheduleForDay = useCallback((day) => {
-    const dayCourses = courses.filter(course => 
-      Array.isArray(course.days) ? course.days.includes(day) : course.days === day
+    const dayCourses = scheduleItems.filter(item => 
+      item.itemType === 'course' && 
+      (Array.isArray(item.days) ? item.days.includes(day) : item.days === day)
     );
-    const dayTimeBlocks = timeBlocks.filter(block => block.day === day);
+    const dayTimeBlocks = scheduleItems.filter(item => 
+      item.itemType === 'timeBlock' && item.day === day
+    );
     
     return [...dayCourses, ...dayTimeBlocks].sort((a, b) => 
       timeToMinutes(a.startTime) - timeToMinutes(b.startTime)
     );
-  }, [courses, timeBlocks]);
+  }, [scheduleItems]);
 
   // Get all schedule items for the current week
   const getAllScheduleItems = useCallback(() => {
-    return [...courses, ...timeBlocks];
-  }, [courses, timeBlocks]);
+    return scheduleItems;
+  }, [scheduleItems]);
 
   // Get only enrolled/selected courses
   const getEnrolledCourses = useCallback(() => {
-    return courses.filter(course => course.isSelected);
-  }, [courses]);
+    return scheduleItems.filter(item => item.itemType === 'course' && item.isSelected);
+  }, [scheduleItems]);
+
+  // Helper functions for backward compatibility
+  const getCourses = useCallback(() => {
+    return scheduleItems.filter(item => item.itemType === 'course');
+  }, [scheduleItems]);
+
+  const getTimeBlocks = useCallback(() => {
+    return scheduleItems.filter(item => item.itemType === 'timeBlock');
+  }, [scheduleItems]);
 
   // Clear conflicts
   const clearConflicts = useCallback(() => {
@@ -290,9 +314,12 @@ export const ScheduleProvider = ({ children }) => {
 
   const value = {
     // Data
-    courses,
-    timeBlocks,
+    scheduleItems,
     conflicts,
+    
+    // Backward compatibility
+    courses: getCourses(),
+    timeBlocks: getTimeBlocks(),
     
     // Actions
     addCourse,
@@ -306,6 +333,8 @@ export const ScheduleProvider = ({ children }) => {
     getScheduleForDay,
     getAllScheduleItems,
     getEnrolledCourses,
+    getCourses,
+    getTimeBlocks,
     clearConflicts,
     hasTimeConflict,
     findConflicts,

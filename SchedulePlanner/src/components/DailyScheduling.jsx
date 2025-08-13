@@ -7,35 +7,27 @@ const DailyScheduling = ({ onBack }) => {
   const totalWeeks = 15;
   
   // Use centralized data from context
-  const { courses, timeBlocks, getAllScheduleItems } = useSchedule();
+  const { scheduleItems, getAllScheduleItems } = useSchedule();
 
   // State for custom colors - maps class ID to color
   const [customColors, setCustomColors] = useState(() => {
     const initialColors = {};
-    // Initialize colors for courses
-    courses.forEach(course => {
-      initialColors[course.id] = course.color;
-    });
-    // Initialize colors for time blocks
-    timeBlocks.forEach(block => {
-      initialColors[block.id] = block.color;
+    // Initialize colors for all schedule items
+    scheduleItems.forEach(item => {
+      initialColors[item.id] = item.color;
     });
     return initialColors;
   });
 
-  // Update colors when courses or time blocks change
+  // Update colors when schedule items change
   useEffect(() => {
     const newColors = {};
-    // Update colors for courses
-    courses.forEach(course => {
-      newColors[course.id] = course.color;
-    });
-    // Update colors for time blocks
-    timeBlocks.forEach(block => {
-      newColors[block.id] = block.color;
+    // Update colors for all schedule items
+    scheduleItems.forEach(item => {
+      newColors[item.id] = item.color;
     });
     setCustomColors(newColors);
-  }, [courses, timeBlocks]);
+  }, [scheduleItems]);
 
   // Predefined color palette for easy selection
   const colorPalette = [
@@ -100,14 +92,14 @@ const DailyScheduling = ({ onBack }) => {
     };
 
     const getSubjectName = () => {
-      // Check both courses and time blocks
-      const courseItem = courses.find(course => course.id === classId);
-      const timeBlockItem = timeBlocks.find(block => block.id === classId);
+      const item = scheduleItems.find(item => item.id === classId);
       
-      if (courseItem) {
-        return courseItem.subject || courseItem.name;
-      } else if (timeBlockItem) {
-        return timeBlockItem.title;
+      if (item) {
+        if (item.itemType === 'course') {
+          return item.subject || item.name;
+        } else if (item.itemType === 'timeBlock') {
+          return item.title;
+        }
       }
       return 'Class';
     };
@@ -166,8 +158,8 @@ const DailyScheduling = ({ onBack }) => {
     );
   };
 
-  // Use centralized course data from context
-  const classes = courses;
+  // Use centralized schedule data from context
+  const classes = scheduleItems.filter(item => item.itemType === 'course');
 
   // Calendar data based on the image
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -180,41 +172,44 @@ const DailyScheduling = ({ onBack }) => {
 
   // Generate schedule events from centralized data using useMemo
   const scheduleEvents = useMemo(() => {
-    console.log('Regenerating schedule events with:', { courses, timeBlocks });
+    console.log('Regenerating schedule events with:', { scheduleItems });
     
-    const courseEvents = courses.map(course => ({
-      days: course.days,
-      startTime: course.startTime,
-      endTime: course.endTime,
-      subject: course.subject,
-      instructor: course.instructor,
-      location: course.room,
-      classId: course.id,
-      weeks: course.weeks,
-      color: course.color
-    }));
+    const allEvents = scheduleItems.map(item => {
+      if (item.itemType === 'course') {
+        return {
+          days: item.days,
+          startTime: item.startTime,
+          endTime: item.endTime,
+          subject: item.subject,
+          instructor: item.instructor,
+          location: item.room,
+          classId: item.id,
+          weeks: item.weeks,
+          color: item.color
+        };
+      } else if (item.itemType === 'timeBlock') {
+        return {
+          days: [item.day], // Convert single day to array
+          startTime: item.startTime,
+          endTime: item.endTime,
+          subject: item.title,
+          instructor: item.type,
+          location: item.description,
+          classId: item.id,
+          weeks: 15,
+          color: item.color
+        };
+      }
+      return null;
+    }).filter(Boolean); // Remove null entries
     
-    const timeBlockEvents = timeBlocks.map(block => ({
-      days: [block.day], // Convert single day to array
-      startTime: block.startTime,
-      endTime: block.endTime,
-      subject: block.title,
-      instructor: block.type,
-      location: block.description,
-      classId: block.id,
-      weeks: 15,
-      color: block.color
-    }));
-    
-    const allEvents = [...courseEvents, ...timeBlockEvents];
     console.log('Generated events:', allEvents);
     
     return allEvents;
-  }, [courses, timeBlocks]);
+  }, [scheduleItems]);
 
   // Test data flow after scheduleEvents is defined
-  console.log('DailyScheduling - Courses:', courses);
-  console.log('DailyScheduling - Time Blocks:', timeBlocks);
+  console.log('DailyScheduling - Schedule Items:', scheduleItems);
   console.log('DailyScheduling - Schedule Events:', scheduleEvents);
 
 
@@ -367,12 +362,11 @@ const DailyScheduling = ({ onBack }) => {
       {/* Debug Info */}
       <div style={{ background: '#f0f0f0', padding: '10px', marginBottom: '20px', borderRadius: '4px', fontSize: '12px' }}>
         <strong>Debug Info:</strong><br/>
-        Courses: {courses.length} | Time Blocks: {timeBlocks.length} | Total Events: {scheduleEvents.length}<br/>
+        Schedule Items: {scheduleItems.length} | Total Events: {scheduleEvents.length}<br/>
         Current Week: {currentWeek} | Week Range: {getWeekDateRange(currentWeek)}<br/>
         <button 
           onClick={() => {
-            console.log('Current courses:', courses);
-            console.log('Current time blocks:', timeBlocks);
+            console.log('Current schedule items:', scheduleItems);
             console.log('Current schedule events:', scheduleEvents);
           }}
           style={{ marginTop: '10px', padding: '5px 10px' }}
@@ -397,69 +391,47 @@ const DailyScheduling = ({ onBack }) => {
             </tr>
           </thead>
           <tbody>
-            {/* Courses */}
-            {courses.map(course => (
-              <tr key={`course-${course.id}`}>
+            {/* All Schedule Items */}
+            {scheduleItems.map(item => (
+              <tr key={`${item.itemType}-${item.id}`}>
                 <td>
-                  <span className={`type-badge course ${course.isSelected ? 'enrolled' : 'not-enrolled'}`}>
-                    {course.isSelected ? 'Enrolled' : 'Available'}
+                  {item.itemType === 'course' ? (
+                    <span className={`type-badge course ${item.isSelected ? 'enrolled' : 'not-enrolled'}`}>
+                      {item.isSelected ? 'Enrolled' : 'Available'}
+                    </span>
+                  ) : (
+                    <span className={`type-badge ${item.type}`}>{item.type}</span>
+                  )}
+                </td>
+                <td>
+                  <span className='table-data'>{item.itemType === 'course' ? item.name : item.title}</span>
+                </td>
+                <td>
+                  <span className='table-data'>{item.itemType === 'course' ? item.subject : item.type}</span>
+                </td>
+                <td>
+                  <span className='table-data'>{item.itemType === 'course' ? `${item.course}-${item.section}` : '-'}</span>
+                </td>
+                <td>
+                  <span className='table-data'>
+                    {item.itemType === 'course' 
+                      ? (Array.isArray(item.days) ? item.days.join(', ') : item.days)
+                      : item.day
+                    }
                   </span>
                 </td>
                 <td>
-                  <span className='table-data'>{course.name}</span>
+                  <span className='table-data'>{item.startTime} - {item.endTime}</span>
                 </td>
                 <td>
-                  <span className='table-data'>{course.subject}</span>
-                </td>
-                <td>
-                  <span className='table-data'>{course.course}-{course.section}</span>
-                </td>
-                <td>
-                  <span className='table-data'>{Array.isArray(course.days) ? course.days.join(', ') : course.days}</span>
-                </td>
-                <td>
-                  <span className='table-data'>{course.startTime} - {course.endTime}</span>
-                </td>
-                <td>
-                  <span className='table-data'>{course.room}</span>
+                  <span className='table-data'>
+                    {item.itemType === 'course' ? item.room : item.description}
+                  </span>
                 </td>
                 <td>
                   <ColorPicker
-                    classId={course.id}
-                    currentColor={customColors[course.id]}
-                    onColorChange={updateClassColor}
-                  />
-                </td>
-              </tr>
-            ))}
-            {/* Time Blocks */}
-            {timeBlocks.map(block => (
-              <tr key={`block-${block.id}`}>
-                <td>
-                  <span className="type-badge timeblock">{block.type}</span>
-                </td>
-                <td>
-                  <span className='table-data'>{block.title}</span>
-                </td>
-                <td>
-                  <span className='table-data'>{block.type}</span>
-                </td>
-                <td>
-                  <span className='table-data'>-</span>
-                </td>
-                <td>
-                  <span className='table-data'>{block.day}</span>
-                </td>
-                <td>
-                  <span className='table-data'>{block.startTime} - {block.endTime}</span>
-                </td>
-                <td>
-                  <span className='table-data'>{block.description}</span>
-                </td>
-                <td>
-                  <ColorPicker
-                    classId={block.id}
-                    currentColor={customColors[block.id]}
+                    classId={item.id}
+                    currentColor={customColors[item.id]}
                     onColorChange={updateClassColor}
                   />
                 </td>
