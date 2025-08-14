@@ -4,6 +4,7 @@ import Homepage from './components/Homepage'
 import Schedule from './components/Schedule'
 import CourseSelection from './components/CourseSelection'
 import TimeBlocks from './components/TimeBlocks'
+import Logo from './components/Logo'
 
 function App() {
   const [activeTab, setActiveTab] = useState('home')
@@ -27,9 +28,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-content">
-          <div className="logo">
-            <h1>Schedule Planner</h1>
-          </div>
+          <Logo variant="glass animated" />
           <nav className="nav-tabs">
             <button 
               className={`tab-button ${activeTab === 'home' ? 'active' : ''}`}
