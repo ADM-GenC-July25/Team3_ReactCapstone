@@ -1,16 +1,46 @@
 import React, { useState } from 'react';
 import './DailyScheduling.css';
+import SampleCourses from './SampleCourses';
 
 const DailyScheduling = ({ onBack }) => {
   const [currentWeek, setCurrentWeek] = useState(2);
   const totalWeeks = 15;
 
-  // State for custom colors - maps class ID to color
-  const [customColors, setCustomColors] = useState({
-    1: '#4CAF50', // Java - default green
-    2: '#FF9800', // Hackerrank - default orange
-    3: '#2196F3'  // Emerging Talent Bootcamp - default blue
+  // Transform SampleCourses data into classes array format
+  const classes = SampleCourses.map(course => ({
+    id: course.id,
+    status: course.isSelected ? 'Enrolled' : 'Not Enrolled',
+    class: (course.id).toString(), // Generate class number based on ID
+    subject: course.name,
+    course: (200 + course.id).toString(), // Generate course number
+    section: String(course.id).padStart(3, '0'), // Generate section number
+    seatsOpen: Math.floor(Math.random() * 20) + 10, // Random seats open (10-29)
+    waitlistSeats: 0,
+    waitlistOpen: Math.floor(Math.random() * 25) + 10, // Random waitlist open (10-34)
+    schedule: `${Array.isArray(course.day) ? course.day.join(' ') : course.day} => ${course.startTime} - ${course.endTime} => ${course.weeks} weeks`,
+    location: course.location
+  }));
+
+  // Transform SampleCourses data into scheduleEvents array format
+  const scheduleEvents = SampleCourses.map(course => ({
+    day: course.day,
+    startTime: course.startTime,
+    endTime: course.endTime,
+    subject: course.name,
+    instructor: course.instructor,
+    location: course.location,
+    classId: course.id,
+    weeks: course.weeks
+  }));
+
+  // Initialize custom colors from SampleCourses data
+  const initialCustomColors = {};
+  SampleCourses.forEach(course => {
+    initialCustomColors[course.id] = course.color;
   });
+
+  // State for custom colors - maps class ID to color
+  const [customColors, setCustomColors] = useState(initialCustomColors);
 
   // Predefined color palette for easy selection
   const colorPalette = [
@@ -133,91 +163,18 @@ const DailyScheduling = ({ onBack }) => {
     );
   };
 
-  // Example class data based on the image
-  const classes = [
-    {
-      id: 1,
-      status: 'Enrolled',
-      class: '10000',
-      subject: 'Java',
-      course: '201',
-      section: '003',
-      seatsOpen: 16,
-      waitlistSeats: 0,
-      waitlistOpen: 10,
-      schedule: 'M W => 17:30am - 21:00pm => 12 weeks',
-      location: 'Microsoft Teams'
-    },
-    {
-      id: 2,
-      status: 'Enrolled',
-      class: '20000',
-      subject: 'Hackerrank',
-      course: '202',
-      section: '206',
-      seatsOpen: 15,
-      waitlistSeats: 0,
-      waitlistOpen: 15,
-      schedule: 'T => 7:00pm - 9:45pm => 15 weeks',
-      location: 'Microsoft Teams'
-    },
-    {
-      id: 3,
-      status: 'Not Enrolled',
-      class: '30000',
-      subject: 'Emerging Talent Bootcamp',
-      course: '203',
-      section: '005',
-      seatsOpen: 14,
-      waitlistSeats: 0,
-      waitlistOpen: 20,
-      schedule: 'T Th => 1:00pm - 3:15pm => 10 weeks',
-      location: 'Microsoft Teams'
-    }
-  ];
+
 
   // Calendar data based on the image
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const timeSlots = [
-    '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
-    '11:00', '11:15', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
-    '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30',
-    '21:00', '21:30', '21:45', '22:00'
+    '06:00', '06:15', '06:30', '06:45', '07:00', '07:15', '07:30', '07:45', '08:00', '08:15', '08:30', '08:45', '09:00', '09:15', '09:30', '09:45', '10:00', '10:15', '10:30',
+    '11:00', '11:15', '11:30', '12:00', '12:15', '12:30', '12:45', '13:00', '13:15', '13:30', '13:45', '14:00', '14:15', '14:30', '14:45', '15:00', '15:15', '15:30',
+    '16:00', '16:15', '16:30', '16:45', '17:00', '17:15', '17:30', '17:45', '18:00', '18:15', '18:30', '18:45', '19:00', '19:15', '19:30', '19:45', '20:00', '20:15', '20:30',
+    '21:00', '21:15', '21:30', '21:45', '22:00', '22:15', '22:30', '22:45', '23:00', '23:15', '23:30', '23:45'
   ];
 
-  // Example schedule events
-  const scheduleEvents = [
-    {
-      day: ['Monday', 'Wednesday'],
-      startTime: '17:30',
-      endTime: '21:00',
-      subject: 'Java',
-      instructor: 'Taryn Ernd',
-      location: 'Microsoft Teams',
-      classId: 1,
-      weeks: 12
-    },
-    {
-      day: 'Tuesday',
-      startTime: '19:00',
-      endTime: '21:45',
-      subject: 'Hackerrank',
-      instructor: 'Antoinette Saade',
-      location: 'Microsoft Teams',
-      classId: 2,
-      weeks: 15
-    },
-    {
-      day: ['Tuesday', 'Thursday'],
-      startTime: '08:00',
-      endTime: '11:15',
-      subject: 'Emerging Talent Bootcamp',
-      instructor: 'Akshat Sharma',
-      location: 'Microsoft Teams',
-      classId: 3,
-      weeks: 10
-    }
-  ];
+
 
   const formatTimeDisplay = (time24) => {
     const [hours, minutes] = time24.split(':');
