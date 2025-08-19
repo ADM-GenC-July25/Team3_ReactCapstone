@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import SampleUsers from './SampleUsers';
 import './Login.css';
 
-export default function Login() {
+export default function Login({ onLoginSuccess }) {
     const [form, setForm] = useState({ email: '', password: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    const { login } = useContext(AuthContext);
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -34,8 +38,29 @@ export default function Login() {
         try {
             // Simulate API call
             await new Promise(res => setTimeout(res, 800));
-            console.log('Logged in with:', form);
-            alert('Login successful!');
+
+            const user = SampleUsers.find(
+                user => user.email.toLowerCase() === form.email.toLowerCase()
+            );
+
+            if (user && form.password === user.password) {
+                const userData = {
+                    email: form.email,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                }
+
+                // Save user to context AND localStorage
+                login(userData);
+                console.log('Logged in with:', userData);
+
+                // Call the callback to redirect
+                console.log('onLoginSuccess: ', onLoginSuccess);
+                onLoginSuccess && onLoginSuccess();
+            } else {
+                setError('Invalid username or password.');
+            }
+
         } catch (err) {
             setError('Something went wrong. Please try again.');
         } finally {
@@ -52,11 +77,11 @@ export default function Login() {
                             <div className="card-body p-4 p-md-5">
                                 <h1 className="h4 mb-4 text-center">Student Login</h1>
 
-                                {/* {error && (
+                                {error && (
                                     <div className="alert alert-danger py-2" role="alert">
                                         {error}
                                     </div>
-                                )} */}
+                                )}
 
                                 <form onSubmit={handleSubmit} noValidate>
                                     <div className="mb-3">
@@ -100,7 +125,7 @@ export default function Login() {
 
                                     <button
                                         type="submit"
-                                        className="btn btn-primary w-100"
+                                        className="btn btn-submit w-100"
                                         disabled={loading}
                                     >
                                         {loading && (

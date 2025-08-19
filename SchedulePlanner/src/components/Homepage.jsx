@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import './Homepage.css';
 import DailyScheduling from './DailyScheduling';
 
 const Homepage = () => {
   const [currentView, setCurrentView] = useState('home');
+
+  // Get current user info from AuthContext
+  const { userInfo, isLoggedIn } = useContext(AuthContext);
 
   const handleDailySchedulingClick = () => {
     setCurrentView('dailyScheduling');
@@ -25,6 +29,7 @@ const Homepage = () => {
           Organize your daily schedule with ease and efficiency
         </p>
         <div className="hero-description">
+          {isLoggedIn && <h2>Hello {userInfo.first_name} {userInfo.last_name},</h2>}
           <p>
             Welcome to Schedule Planner - your comprehensive solution for managing 
             daily schedules, classes, and appointments. Create, view, and organize 
