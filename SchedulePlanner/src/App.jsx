@@ -5,11 +5,13 @@ import Schedule from './components/Schedule'
 import CourseSelection from './components/CourseSelection'
 import TimeBlocks from './components/TimeBlocks'
 import Logo from './components/Logo'
+import SampleCourses from './components/SampleCourses'
 import Login from './components/Login'
 import { AuthContext } from './context/AuthContext'
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
+  const [courseList, setCourseList] = useState(SampleCourses);
 
   const { isLoggedIn, userInfo, logout } = useContext(AuthContext);
 
@@ -36,9 +38,9 @@ function App() {
       case 'login':
         return <Login onLoginSuccess={() => setActiveTab('home')} />
       case 'schedule':
-        return <Schedule />
+        return <Schedule courseList={courseList} />
       case 'courses':
-        return <CourseSelection />
+        return <CourseSelection courseList={courseList} setCourseList={setCourseList} />
       case 'timeblocks':
         return <TimeBlocks />
       default:
