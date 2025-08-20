@@ -4,12 +4,15 @@ import Homepage from './components/Homepage'
 import Schedule from './components/Schedule'
 import CourseSelection from './components/CourseSelection'
 import TimeBlocks from './components/TimeBlocks'
+import Cart from './components/Cart'
 import Logo from './components/Logo'
 import SampleCourses from './components/SampleCourses'
+import { CartProvider, useCart } from './context/CartContext'
 
-function App() {
+function AppContent() {
   const [activeTab, setActiveTab] = useState('home')
   const [courseList, setCourseList] = useState(SampleCourses);
+  const { getCartItemCount } = useCart();
 
   const renderContent = () => {
     switch (activeTab) {
@@ -21,6 +24,8 @@ function App() {
         return <CourseSelection courseList={courseList} setCourseList={setCourseList} />
       case 'timeblocks':
         return <TimeBlocks />
+      case 'cart':
+        return <Cart />
       default:
         return <Homepage />
     }
@@ -56,6 +61,15 @@ function App() {
             >
               Time Blocks
             </button>
+            <button 
+              className={`tab-button ${activeTab === 'cart' ? 'active' : ''} cart-tab`}
+              onClick={() => setActiveTab('cart')}
+            >
+              Cart
+              {getCartItemCount() > 0 && (
+                <span className="cart-badge">{getCartItemCount()}</span>
+              )}
+            </button>
           </nav>
         </div>
       </header>
@@ -64,6 +78,14 @@ function App() {
         {renderContent()}
       </main>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <CartProvider>
+      <AppContent />
+    </CartProvider>
   )
 }
 

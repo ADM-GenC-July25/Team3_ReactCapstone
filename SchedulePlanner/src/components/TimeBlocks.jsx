@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useCart } from '../context/CartContext';
 import './TimeBlocks.css';
 
 const TimeBlocks = () => {
@@ -13,6 +14,8 @@ const TimeBlocks = () => {
     type: 'club',
     description: ''
   });
+
+  const { addTimeBlock, isItemInCart } = useCart();
 
   // Initial time blocks data
   const [timeBlocks, setTimeBlocks] = useState([
@@ -132,6 +135,10 @@ const TimeBlocks = () => {
 
   const handleDeleteTimeBlock = (id) => {
     setTimeBlocks(timeBlocks.filter(tb => tb.id !== id));
+  };
+
+  const handleAddToCart = (timeBlock) => {
+    addTimeBlock(timeBlock);
   };
 
   const renderWeekSelector = () => {
@@ -291,13 +298,23 @@ const TimeBlocks = () => {
               <div key={block.id} className="timeblock-card" style={{borderLeftColor: block.color}}>
                 <div className="block-header">
                   <h4>{block.title}</h4>
-                  <button 
-                    className="delete-button"
-                    onClick={() => handleDeleteTimeBlock(block.id)}
-                    title="Delete time block"
-                  >
-                    ×
-                  </button>
+                  <div className="block-actions">
+                    <button 
+                      className={`add-to-cart-button ${isItemInCart(block.id, 'timeblock') ? 'added' : ''}`}
+                      onClick={() => handleAddToCart(block)}
+                      disabled={isItemInCart(block.id, 'timeblock')}
+                      title={isItemInCart(block.id, 'timeblock') ? 'Already in cart' : 'Add to cart'}
+                    >
+                      {isItemInCart(block.id, 'timeblock') ? '✓' : '+'}
+                    </button>
+                    <button 
+                      className="delete-button"
+                      onClick={() => handleDeleteTimeBlock(block.id)}
+                      title="Delete time block"
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
                 <div className="block-details">
                   <div className="block-type">{block.type.charAt(0).toUpperCase() + block.type.slice(1)}</div>

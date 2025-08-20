@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useCart } from '../context/CartContext';
 import './Courses.css';
 
 export default function CourseList({ courseList, setCourseList, setIsAddCourses }) {
 
     const [selectedCourse, setSelectedCourse] = useState({});
+    const { addCourse, isItemInCart } = useCart();
 
     function handleDelete(id) {
         const updatedCourseList = courseList.map(course =>
@@ -12,6 +14,10 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
         setCourseList(updatedCourseList);
         // console.log(courseList.filter(course => course.isSelected));
     }
+
+    const handleAddToCart = (course) => {
+        addCourse(course);
+    };
 
     return (
         <>
@@ -48,6 +54,18 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
                                                 onClick={() => setSelectedCourse(course)}
                                             >
                                                 <i className="fa fa-info-circle"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button 
+                                                type="button"
+                                                className={`btn ${isItemInCart(course.id, 'course') ? 'btn-success' : 'btn-outline-primary'}`}
+                                                onClick={() => handleAddToCart(course)}
+                                                disabled={isItemInCart(course.id, 'course')}
+                                                title={isItemInCart(course.id, 'course') ? 'Already in cart' : 'Add to cart'}
+                                            >
+                                                <i className={`fa ${isItemInCart(course.id, 'course') ? 'fa-check' : 'fa-shopping-cart'}`}></i>
+                                                {isItemInCart(course.id, 'course') ? ' Added' : ' Add to Cart'}
                                             </button>
                                         </td>
                                         <td>
