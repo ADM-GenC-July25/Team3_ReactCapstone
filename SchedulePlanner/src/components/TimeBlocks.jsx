@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useCart } from '../context/CartContext';
 import './TimeBlocks.css';
 
 const TimeBlocks = () => {
+  const { addToCart } = useCart();
   const [currentWeek, setCurrentWeek] = useState(2);
   const totalWeeks = 15;
   const [showAddForm, setShowAddForm] = useState(false);
@@ -291,13 +293,22 @@ const TimeBlocks = () => {
               <div key={block.id} className="timeblock-card" style={{borderLeftColor: block.color}}>
                 <div className="block-header">
                   <h4>{block.title}</h4>
-                  <button 
-                    className="delete-button"
-                    onClick={() => handleDeleteTimeBlock(block.id)}
-                    title="Delete time block"
-                  >
-                    ×
-                  </button>
+                  <div className="block-actions">
+                    <button 
+                      className="add-to-cart-button"
+                      onClick={() => addToCart(block, 'timeblock')}
+                      title="Add to cart"
+                    >
+                      🛒
+                    </button>
+                    <button 
+                      className="delete-button"
+                      onClick={() => handleDeleteTimeBlock(block.id)}
+                      title="Delete time block"
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
                 <div className="block-details">
                   <div className="block-type">{block.type.charAt(0).toUpperCase() + block.type.slice(1)}</div>

@@ -193,6 +193,12 @@
   margin-bottom: 0.5rem;
 }
 
+.block-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .block-header h4 {
   margin: 0;
   color: #333;
@@ -219,6 +225,26 @@
 .delete-button:hover {
   background-color: #ff4444;
   color: white;
+}
+
+.add-to-cart-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.add-to-cart-button:hover {
+  background-color: #007bff;
+  transform: scale(1.1);
 }
 
 .block-details {
