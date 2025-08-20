@@ -7,13 +7,18 @@ import TimeBlocks from './components/TimeBlocks'
 import Logo from './components/Logo'
 import SampleCourses from './components/SampleCourses'
 import Login from './components/Login'
+import Cart from './components/Cart'
+import Toast from './components/Toast'
 import { AuthContext } from './context/AuthContext'
+import { useCart } from './context/CartContext'
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [courseList, setCourseList] = useState(SampleCourses);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const { isLoggedIn, userInfo, logout } = useContext(AuthContext);
+  const { cartCount } = useCart();
 
   // Handle navigation clicks
   const handleNavClick = (tabName) => {
@@ -93,6 +98,13 @@ function App() {
                   Time Blocks
                 </button>
                 <button
+                  className="cart-button"
+                  onClick={() => setIsCartOpen(true)}
+                >
+                  🛒 Cart
+                  {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+                </button>
+                <button
                   className={`tab-button`}
                   onClick={handleLogout}
                 >
@@ -107,6 +119,9 @@ function App() {
       <main className="app-main">
         {renderContent()}
       </main>
+
+      <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <Toast />
     </div>
   )
 }
