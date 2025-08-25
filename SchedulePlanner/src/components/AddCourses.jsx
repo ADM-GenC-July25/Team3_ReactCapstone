@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useCart } from '../context/CartContext';
 import './Courses.css';
 
 export default function AddCourses({ courseList, setCourseList, setIsAddCourses }) {
 
     const [selectedCourse, setSelectedCourse] = useState({});
+    const { addToCart } = useCart();
 
     return (
         <>
@@ -49,8 +51,18 @@ export default function AddCourses({ courseList, setCourseList, setIsAddCourses 
                                                     ));
                                                 }}
                                                 disabled={course.isSelected}
+                                                title="Add to Schedule"
                                             >
                                                 <i className='fa fa-plus' aria-hidden="true"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button type="button"
+                                                className="btn btn-primary"
+                                                onClick={() => addToCart(course, 'course')}
+                                                title="Add to Cart"
+                                            >
+                                                <i className='fa fa-shopping-cart' aria-hidden="true"></i>
                                             </button>
                                         </td>
                                     </tr>

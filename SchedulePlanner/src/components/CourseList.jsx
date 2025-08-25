@@ -10,6 +10,7 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
             course.id === id ? { ...course, isSelected: false } : course
         );
         setCourseList(updatedCourseList);
+        // console.log(courseList.filter(course => course.isSelected));
     }
 
     return (
@@ -21,7 +22,7 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
                         className='btn btn-light'
                         onClick={() => setIsAddCourses(true)}
                     >
-                        <i className="fa fa-plus" aria-hidden="true"></i>
+                        <i className="fa fa-plus" aria-hidden="false"></i>
                     </button>
 
                 </div>
@@ -56,7 +57,7 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
                                                 data-target="#deleteCourseModalCenter"
                                                 onClick={() => setSelectedCourse(course)}
                                             >
-                                                <i className='fa fa-trash' aria-hidden="true"></i>
+                                                <i className='fa fa-trash' aria-hidden="false"></i>
                                             </button>
                                         </td>
                                     </tr>
@@ -67,7 +68,7 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
             </div>
 
             {/* Modal to view course details */}
-            <div className="modal fade" id="exampleModalCenter" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div className="modal fade" id="exampleModalCenter" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="false">
                 <div className="modal-dialog modal-dialog-centered" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -85,7 +86,7 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
                                 {selectedCourse.name}
                             </h5>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                                <span aria-hidden="false">&times;</span>
                             </button>
                         </div>
                         <div className="modal-body">
@@ -114,7 +115,7 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
             </div>
 
             {/* Modal to confirm course deletion */}
-            <div className="modal fade" id="deleteCourseModalCenter" tabIndex="-1" role="dialog" aria-labelledby="deleteCourseModalCenter" aria-hidden="true">
+            <div className="modal fade" id="deleteCourseModalCenter" tabIndex="-1" role="dialog" aria-labelledby="deleteCourseModalCenter" aria-hidden="false">
                 <div className="modal-dialog modal-dialog-centered" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
@@ -132,7 +133,7 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
                                 {selectedCourse.name}
                             </h5>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                                <span aria-hidden="false">&times;</span>
                             </button>
                         </div>
                         <div className="modal-body">

@@ -11,7 +11,7 @@ const SampleCourses = [
         instructor: "Dr. Smith",
         courseDescription: "Introduction to Computer Science",
         color: "#4CAF50",
-        isSelected: true
+        isSelected: false
     },
     {
         id: 2,
@@ -24,7 +24,7 @@ const SampleCourses = [
         instructor: "Prof. Johnson",
         courseDescription: "Advanced Calculus",
         color: "#2196F3",
-        isSelected: true
+        isSelected: false
     },
     {
         id: 3,
@@ -37,7 +37,7 @@ const SampleCourses = [
         instructor: "Dr. Williams",
         courseDescription: "Experimental Physics",
         color: "#FF9800",
-        isSelected: true
+        isSelected: false
     },
     {
         id: 4,
@@ -120,8 +120,8 @@ const SampleCourses = [
     {
         id: 10,
         name: "Statistics",
-        startTime: "11:30",
-        endTime: "12:45",
+        startTime: "16:30",
+        endTime: "15:45",
         day: ['Friday'],
         weeks: 12,
         location: "Room 140",
