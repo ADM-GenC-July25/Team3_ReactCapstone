@@ -1,25 +1,16 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import './Homepage.css';
-import DailyScheduling from './DailyScheduling';
 
-const Homepage = () => {
-  const [currentView, setCurrentView] = useState('home');
-
+const Homepage = ({ onNavigateToTab }) => {
   // Get current user info from AuthContext
   const { userInfo, isLoggedIn } = useContext(AuthContext);
 
-  const handleDailySchedulingClick = () => {
-    setCurrentView('dailyScheduling');
+  const handleFeatureClick = (tabName) => {
+    if (onNavigateToTab) {
+      onNavigateToTab(tabName);
+    }
   };
-
-  const handleBackToHome = () => {
-    setCurrentView('home');
-  };
-
-  if (currentView === 'dailyScheduling') {
-    return <DailyScheduling onBack={handleBackToHome} />;
-  }
 
   return (
     <div className="homepage-container">
@@ -41,25 +32,20 @@ const Homepage = () => {
       <div className="features-section">
         <h2>Features</h2>
         <div className="features-grid">
-          <div className="feature-card clickable" onClick={handleDailySchedulingClick}>
+          <div className="feature-card clickable" onClick={() => handleFeatureClick('schedule')}>
             <div className="feature-icon">📅</div>
-            <h3>View Schedule</h3>
-            <p>View your day</p>
+            <h3>Schedule Management</h3>
+            <p>View and manage your daily schedule with ease</p>
           </div>
-          <div className="feature-card">
-            <div className="feature-icon">🎨</div>
-            <h3>Color Coding</h3>
-            <p>Organize classes and events with customizable color schemes</p>
+          <div className="feature-card clickable" onClick={() => handleFeatureClick('courses')}>
+            <div className="feature-icon">📚</div>
+            <h3>Course Selection</h3>
+            <p>Browse and enroll in courses with conflict detection</p>
           </div>
-          <div className="feature-card">
-            <div className="feature-icon">📍</div>
-            <h3>Room & Instructor Info</h3>
-            <p>Keep track of locations and instructors for each scheduled item</p>
-          </div>
-          <div className="feature-card">
+          <div className="feature-card clickable" onClick={() => handleFeatureClick('timeblocks')}>
             <div className="feature-icon">⏰</div>
-            <h3>Generate Schedule</h3>
-            <p>Plan your day with 15-minute interval precision from 6 AM to 10 PM</p>
+            <h3>Time Blocks</h3>
+            <p>Schedule personal activities and commitments</p>
           </div>
         </div>
       </div>
@@ -73,11 +59,15 @@ const Homepage = () => {
           </div>
           <div className="step">
             <span className="step-number">2</span>
-            <p>Add your classes, meetings, and appointments</p>
+            <p>Browse available courses in the Courses tab and add them to your cart</p>
           </div>
           <div className="step">
             <span className="step-number">3</span>
-            <p>Customize colors and details for better organization</p>
+            <p>Use Time Blocks to schedule personal activities and commitments</p>
+          </div>
+          <div className="step">
+            <span className="step-number">4</span>
+            <p>Review and finalize your schedule with automatic conflict detection</p>
           </div>
         </div>
       </div>

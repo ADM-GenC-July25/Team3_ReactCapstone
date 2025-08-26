@@ -14,6 +14,7 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success'); // 'success', 'error', 'warning'
 
   const addToCart = (item, type) => {
     const cartItem = {
@@ -24,30 +25,106 @@ export const CartProvider = ({ children }) => {
     };
 
     setCartItems(prevItems => [...prevItems, cartItem]);
-    showToastMessage(`${item.name || item.title} added to cart!`);
+    showToastMessage(`${item.name || item.title} added to cart!`, 'success');
   };
 
   const removeFromCart = (cartId) => {
     setCartItems(prevItems => prevItems.filter(item => item.cartId !== cartId));
+    showToastMessage('Item removed from cart', 'success');
   };
 
   const clearCart = () => {
     setCartItems([]);
   };
 
-  const showToastMessage = (message) => {
+  const showToastMessage = (message, type = 'success') => {
     setToastMessage(message);
+    setToastType(type);
     setShowToast(true);
     setTimeout(() => {
       setShowToast(false);
       setToastMessage('');
-    }, 3000);
+      setToastType('success');
+    }, 4000); // Increased timeout for error messages
   };
 
-  const checkout = () => {
-    // For now, just show a toast message without updating actual schedule
-    showToastMessage('Schedule updated successfully!');
-    clearCart();
+  const showConflictError = (conflicts) => {
+    const conflictNames = conflicts.map(c => c.name || c.title).join(', ');
+    showToastMessage(
+      `Cannot add to schedule: Time conflict with ${conflictNames}. Please resolve conflicts first.`, 
+      'error'
+    );
+  };
+
+  const checkout = (scheduleContext) => {
+    if (!scheduleContext) {
+      showToastMessage('Error: Schedule system not available', 'error');
+      return { success: false };
+    }
+
+    let hasErrors = false;
+    const conflictedItems = [];
+    const successfulItems = [];
+
+    // Process each cart item
+    cartItems.forEach(item => {
+      if (item.type === 'course') {
+        const result = scheduleContext.addCourse(item);
+        if (!result.success) {
+          hasErrors = true;
+          conflictedItems.push({
+            item,
+            conflicts: result.conflicts || []
+          });
+        } else {
+          successfulItems.push(item);
+        }
+      } else if (item.type === 'timeblock') {
+        const result = scheduleContext.addTimeBlock(item);
+        if (!result.success) {
+          hasErrors = true;
+          conflictedItems.push({
+            item,
+            conflicts: result.conflicts || []
+          });
+        } else {
+          successfulItems.push(item);
+        }
+      }
+    });
+
+    if (hasErrors) {
+      // Show detailed conflict information
+      const conflictMessages = conflictedItems.map(({ item, conflicts }) => {
+        const conflictNames = conflicts.map(c => c.name || c.title).join(', ');
+        return `${item.name || item.title} conflicts with: ${conflictNames}`;
+      });
+      
+      showToastMessage(
+        `Checkout partially failed. Conflicts found:\n${conflictMessages.join('\n')}`, 
+        'error'
+      );
+
+      // Remove only successful items from cart
+      const successfulCartIds = successfulItems.map(item => item.cartId);
+      setCartItems(prevItems => 
+        prevItems.filter(item => !successfulCartIds.includes(item.cartId))
+      );
+
+      return { 
+        success: false, 
+        conflicts: conflictedItems,
+        successful: successfulItems.length
+      };
+    } else {
+      // All items added successfully
+      showToastMessage(
+        `Successfully added ${cartItems.length} item(s) to your schedule!`, 
+        'success'
+      );
+      clearCart();
+      return { success: true, itemsAdded: cartItems.length };
+    }
   };
 
   const value = {
@@ -58,6 +135,9 @@ export const CartProvider = ({ children }) => {
     checkout,
     showToast,
     toastMessage,
+    toastType,
+    showConflictError,
+    showToastMessage,
     cartCount: cartItems.length
   };
 

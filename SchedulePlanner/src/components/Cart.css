@@ -80,6 +80,41 @@
   color: #495057;
 }
 
+/* Conflict Warning Styles */
+.conflict-warning {
+  background: linear-gradient(135deg, #f56565, #e53e3e);
+  color: white;
+  margin: 15px;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+  animation: slideIn 0.4s ease-out;
+}
+
+.conflict-warning h4 {
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.conflict-details {
+  margin: 10px 0;
+}
+
+.conflict-item {
+  margin: 6px 0;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.conflict-warning p {
+  margin: 10px 0 0 0;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
 .cart-items {
   flex: 1;
   padding: 20px;
@@ -203,10 +238,21 @@
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
-.checkout-btn:hover {
+.checkout-btn:hover:not(.disabled) {
   background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.checkout-btn.disabled {
+  background: #dc3545;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.checkout-btn.disabled:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
 }
 
 .cart-button {
@@ -250,34 +296,7 @@
   border: 2px solid white;
 }
 
-.toast {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 16px 24px;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-  z-index: 1001;
-  animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  font-weight: 500;
-  min-width: 280px;
-}
 
-.toast::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  border-radius: 12px;
-  pointer-events: none;
-}
 
 @keyframes slideIn {
   from {
@@ -293,5 +312,10 @@
 @media (max-width: 768px) {
   .cart-sidebar {
     width: 100vw;
+  }
+  
+  .conflict-warning {
+    margin: 10px;
+    padding: 12px;
   }
 } 
