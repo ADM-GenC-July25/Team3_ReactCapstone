@@ -1,45 +1,59 @@
 import { useState } from 'react';
+import { useSchedule } from '../contexts/ScheduleContext';
 import './Courses.css';
 
-export default function CourseList({ courseList, setCourseList, setIsAddCourses }) {
-
+export default function CourseList() {
+    const { getEnrolledCourses, updateCourse, removeCourse } = useSchedule();
     const [selectedCourse, setSelectedCourse] = useState({});
 
+    // Get enrolled courses from ScheduleContext
+    const enrolledCourses = getEnrolledCourses();
+
     function handleDelete(id) {
-        const updatedCourseList = courseList.map(course =>
-            course.id === id ? { ...course, isSelected: false } : course
-        );
-        setCourseList(updatedCourseList);
-        // console.log(courseList.filter(course => course.isSelected));
+        // Update course to not selected rather than removing completely
+        updateCourse(id, { isSelected: false, status: 'Not Enrolled' });
     }
 
     return (
         <>
             <div className='courseListContainer'>
                 <div className='courseListHeader'>
-                    <h1>Courses</h1>
-                    <button
-                        className='btn btn-light'
-                        onClick={() => setIsAddCourses(true)}
-                    >
-                        <i className="fa fa-plus" aria-hidden="false"></i>
-                    </button>
-
+                    <h1>Enrolled Courses</h1>
                 </div>
                 <div className="table-responsive">
-                    <table className="table table-hover">
-                        <tbody>
-                            {courseList
-                                .filter(course => course.isSelected)
-                                .map((course) => (
+                    {enrolledCourses.length === 0 ? (
+                        <div className="no-courses">
+                            <p>No courses enrolled yet. Browse available courses to add them to your schedule.</p>
+                        </div>
+                    ) : (
+                        <table className="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Course</th>
+                                    <th>Code</th>
+                                    <th>Time</th>
+                                    <th>Days</th>
+                                    <th>Instructor</th>
+                                    <th>Details</th>
+                                    <th>Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {enrolledCourses.map((course) => (
                                     <tr key={course.id}>
                                         <td>
                                             <input
                                                 type="checkbox"
-                                                value={course.id}
+                                                checked={course.isSelected}
+                                                onChange={(e) => updateCourse(course.id, { isSelected: e.target.checked })}
                                             />
                                         </td>
                                         <td className='text-left'>{course.name}</td>
+                                        <td className='text-left'>{course.subject} {course.course}-{course.section}</td>
+                                        <td className='text-left'>{course.startTime} - {course.endTime}</td>
+                                        <td className='text-left'>{Array.isArray(course.days) ? course.days.join(', ') : course.days}</td>
+                                        <td className='text-left'>{course.instructor}</td>
                                         <td>
                                             <button type="button"
                                                 className="btn btn-outline-info"
@@ -62,8 +76,9 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
                                         </td>
                                     </tr>
                                 ))}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             </div>
 
@@ -91,9 +106,18 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
                         </div>
                         <div className="modal-body">
                             <p>
+                                <strong>Course Code:</strong><br />
+                                {selectedCourse.subject} {selectedCourse.course}-{selectedCourse.section}
+                            </p>
+                            <p>
                                 <strong>Time:</strong>
                                 <br />
                                 {selectedCourse.startTime} - {selectedCourse.endTime}
+                            </p>
+                            <p>
+                                <strong>Days:</strong>
+                                <br />
+                                {Array.isArray(selectedCourse.days) ? selectedCourse.days?.join(', ') : selectedCourse.days}
                             </p>
                             <p>
                                 <strong>Room:</strong>
@@ -106,8 +130,17 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
                                 {selectedCourse.instructor}
                             </p>
                             <p>
+                                <strong>Duration:</strong>
+                                <br />
+                                {selectedCourse.weeks} weeks
+                            </p>
+                            <p>
                                 <strong>Description:</strong> <br />
                                 {selectedCourse.courseDescription}
+                            </p>
+                            <p>
+                                <strong>Status:</strong> <br />
+                                {selectedCourse.status}
                             </p>
                         </div>
                     </div>
@@ -130,30 +163,31 @@ export default function CourseList({ courseList, setCourseList, setIsAddCourses 
                                 >
                                     &nbsp;
                                 </span>&nbsp;
-                                {selectedCourse.name}
+                                Remove {selectedCourse.name}
                             </h5>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="false">&times;</span>
                             </button>
                         </div>
                         <div className="modal-body">
-                            <p>Are you sure you want to delete this course?</p>
+                            <p>Are you sure you want to remove this course from your schedule?</p>
+                            <p><strong>Note:</strong> This will unenroll you from the course.</p>
                         </div>
-                        <div class="modal-footer">
+                        <div className="modal-footer">
                             <button
                                 type="button"
-                                class="btn btn-light"
+                                className="btn btn-danger"
                                 data-dismiss="modal"
                                 onClick={() => handleDelete(selectedCourse.id)}
                             >
-                                Yes
+                                Yes, Remove Course
                             </button>
                             <button
                                 type="button"
-                                class="btn btn-warning"
+                                className="btn btn-secondary"
                                 data-dismiss="modal"
                             >
-                                No
+                                Cancel
                             </button>
                         </div>
                     </div>

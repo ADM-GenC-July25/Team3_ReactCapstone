@@ -1,163 +1,205 @@
+/* Homepage Container */
 .homepage-container {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 2rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: calc(100vh - 80px);
 }
 
+/* Hero Section */
 .hero-section {
   text-align: center;
-  padding: 4rem 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16px;
-  color: white;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 20px;
   margin-bottom: 3rem;
+  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.1);
 }
 
 .hero-title {
   font-size: 3.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero-subtitle {
-  font-size: 1.5rem;
-  font-weight: 300;
+  font-size: 1.4rem;
+  color: #6c757d;
   margin-bottom: 2rem;
-  opacity: 0.9;
+  font-weight: 500;
 }
 
-.hero-description {
-  max-width: 600px;
-  margin: 0 auto;
+.hero-description h2 {
+  color: #495057;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.hero-description p {
   font-size: 1.1rem;
+  color: #6c757d;
   line-height: 1.6;
-  opacity: 0.8;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
+/* Features Section */
 .features-section {
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
 }
 
 .features-section h2 {
   text-align: center;
   font-size: 2.5rem;
+  font-weight: 600;
+  color: #495057;
   margin-bottom: 3rem;
-  color: #333;
 }
 
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .feature-card {
   background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  padding: 2.5rem 2rem;
+  border-radius: 16px;
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid #f0f0f0;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(102, 126, 234, 0.1);
 }
 
 .feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-}
-
-.feature-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.feature-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.feature-card p {
-  color: #666;
-  line-height: 1.6;
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
 }
 
 .feature-card.clickable {
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card.clickable::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.feature-card.clickable:hover::before {
+  left: 100%;
 }
 
 .feature-card.clickable:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-  background-color: #f8f9ff;
+  transform: translateY(-10px);
+  box-shadow: 0 20px 50px rgba(102, 126, 234, 0.25);
+  border-color: #667eea;
 }
 
 .feature-card.clickable:active {
-  transform: translateY(-2px);
+  transform: translateY(-5px);
 }
 
+.feature-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.feature-card h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 1rem;
+}
+
+.feature-card p {
+  color: #6c757d;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* Getting Started Section */
 .getting-started-section {
-  background: #f8f9fa;
-  padding: 3rem;
-  border-radius: 12px;
+  background: white;
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.1);
 }
 
 .getting-started-section h2 {
   text-align: center;
   font-size: 2.5rem;
+  font-weight: 600;
+  color: #495057;
   margin-bottom: 3rem;
-  color: #333;
 }
 
 .steps {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 2rem;
-  max-width: 600px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
 .step {
   display: flex;
-  align-items: center;
-  gap: 1.5rem;
+  align-items: flex-start;
+  gap: 1rem;
   padding: 1.5rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.step:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
 }
 
 .step-number {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 50%;
-  font-weight: bold;
-  font-size: 1.2rem;
+  font-weight: 600;
+  font-size: 1.1rem;
   flex-shrink: 0;
 }
 
 .step p {
+  color: #495057;
+  line-height: 1.6;
   margin: 0;
-  font-size: 1.1rem;
-  color: #555;
-  line-height: 1.5;
+  font-size: 1rem;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
   .homepage-container {
     padding: 1rem;
   }
   
   .hero-section {
-    padding: 3rem 1.5rem;
+    padding: 2rem 1rem;
   }
   
   .hero-title {
@@ -170,14 +212,34 @@
   
   .features-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
   
-  .getting-started-section {
+  .feature-card {
     padding: 2rem 1.5rem;
   }
   
-  .step {
-    flex-direction: column;
-    text-align: center;
+  .getting-started-section {
+    padding: 2rem 1rem;
+  }
+  
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .features-section h2,
+  .getting-started-section h2 {
+    font-size: 2rem;
+  }
+  
+  .feature-icon {
+    font-size: 2.5rem;
   }
 } 

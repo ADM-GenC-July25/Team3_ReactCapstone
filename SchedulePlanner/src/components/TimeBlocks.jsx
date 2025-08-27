@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { useSchedule } from '../contexts/ScheduleContext';
+import ConflictDisplay from './ConflictDisplay';
 import './TimeBlocks.css';
 
 const TimeBlocks = () => {
   const { addToCart } = useCart();
+  const { 
+    getTimeBlocks, 
+    addTimeBlock, 
+    removeTimeBlock,
+    conflicts, 
+    potentialConflicts 
+  } = useSchedule();
+  
   const [currentWeek, setCurrentWeek] = useState(2);
   const totalWeeks = 15;
   const [showAddForm, setShowAddForm] = useState(false);
@@ -16,49 +26,8 @@ const TimeBlocks = () => {
     description: ''
   });
 
-  // Initial time blocks data
-  const [timeBlocks, setTimeBlocks] = useState([
-    {
-      id: 1,
-      title: 'Chess Club',
-      day: 'Monday',
-      startTime: '15:30',
-      endTime: '17:00',
-      type: 'club',
-      description: 'Weekly chess club meeting',
-      color: '#9C27B0'
-    },
-    {
-      id: 2,
-      title: 'Part-time Job',
-      day: 'Wednesday',
-      startTime: '14:00',
-      endTime: '18:00',
-      type: 'job',
-      description: 'Customer service at local store',
-      color: '#FF5722'
-    },
-    {
-      id: 3,
-      title: 'Study Break',
-      day: 'Friday',
-      startTime: '12:00',
-      endTime: '13:00',
-      type: 'break',
-      description: 'Lunch and relaxation',
-      color: '#4CAF50'
-    },
-    {
-      id: 4,
-      title: 'Gym Session',
-      day: 'Tuesday',
-      startTime: '18:00',
-      endTime: '19:30',
-      type: 'personal',
-      description: 'Evening workout',
-      color: '#FF9800'
-    }
-  ]);
+  // Get time blocks from ScheduleContext
+  const timeBlocks = getTimeBlocks();
 
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const timeSlots = [
@@ -112,28 +81,49 @@ const TimeBlocks = () => {
   };
 
   const handleAddTimeBlock = () => {
-    const newId = Math.max(...timeBlocks.map(tb => tb.id), 0) + 1;
+    if (!newTimeBlock.title.trim()) {
+      alert('Please enter a title for the time block');
+      return;
+    }
+
     const color = typeColors[newTimeBlock.type] || typeColors.other;
     
-    setTimeBlocks([...timeBlocks, {
+    const timeBlockToAdd = {
       ...newTimeBlock,
-      id: newId,
+      id: Date.now(), // Generate unique ID
       color
-    }]);
-    
-    setNewTimeBlock({
-      title: '',
-      day: 'Monday',
-      startTime: '09:00',
-      endTime: '10:00',
-      type: 'club',
-      description: ''
-    });
-    setShowAddForm(false);
+    };
+
+    console.log('Adding time block:', timeBlockToAdd); // Debug log
+
+    try {
+      const result = addTimeBlock(timeBlockToAdd);
+      console.log('Add result:', result); // Debug log
+      
+      if (result.success) {
+        // Reset form on success
+        setNewTimeBlock({
+          title: '',
+          day: 'Monday',
+          startTime: '09:00',
+          endTime: '10:00',
+          type: 'club',
+          description: ''
+        });
+        setShowAddForm(false);
+        console.log('Time block added successfully!'); // Debug log
+      } else {
+        console.log('Time block not added due to conflicts:', result.conflicts); // Debug log
+        // Conflicts will be shown via ConflictDisplay
+      }
+    } catch (error) {
+      console.error('Error adding time block:', error);
+      alert('Error adding time block. Please try again.');
+    }
   };
 
   const handleDeleteTimeBlock = (id) => {
-    setTimeBlocks(timeBlocks.filter(tb => tb.id !== id));
+    removeTimeBlock(id);
   };
 
   const renderWeekSelector = () => {
@@ -181,6 +171,11 @@ const TimeBlocks = () => {
 
   return (
     <div className="timeblocks-container">
+      {/* Show conflict display if there are any conflicts */}
+      {(conflicts.length > 0 || potentialConflicts.length > 0) && (
+        <ConflictDisplay />
+      )}
+
       <div className="timeblocks-header">
         <h1>Time Blocks</h1>
         <p>Manage your non-class activities: clubs, jobs, breaks, and personal time</p>
