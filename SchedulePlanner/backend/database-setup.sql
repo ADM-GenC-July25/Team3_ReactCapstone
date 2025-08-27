@@ -31,10 +31,9 @@ CREATE TABLE IF NOT EXISTS students (
     password_hash VARCHAR(255) NOT NULL,
     event_type ENUM('time_block', 'course') NOT NULL,
     time_block_id INT,
-    selected_course_id INT,
-    FOREIGN KEY (time_block_id) REFERENCES time_blocks(time_block_id),
-    FOREIGN KEY (selected_course_id) REFERENCES students_courses(course_id)
+    selected_course_id INT
 );
+
 
 -- Time Blocks table
 -- - time_block_id (INT, PRIMARY KEY, AUTO_INCREMENT)
@@ -54,8 +53,7 @@ CREATE TABLE IF NOT EXISTS time_blocks (
     day ENUM('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday') NOT NULL,
     weeks INT,
     description TEXT,
-    student_id INT,
-    FOREIGN KEY (student_id) REFERENCES students(student_id)
+    student_id INT
 );
 
 -- Cart Table
@@ -68,26 +66,19 @@ CREATE TABLE IF NOT EXISTS cart (
     cart_id INT PRIMARY KEY AUTO_INCREMENT,
     student_id INT,
     time_block_id INT,
-    selected_course_id INT,
-    FOREIGN KEY (student_id) REFERENCES students(student_id),
-    FOREIGN KEY (time_block_id) REFERENCES time_blocks(time_block_id),
-    FOREIGN KEY (selected_course_id) REFERENCES students_courses(course_id)
+    selected_course_id INT
 );
 
 
 -- Students Courses Table
 -- - selected_course_id (INT, PRIMARY KEY, AUTO_INCREMENT)
 -- - instructor_course_id(INT, FOREIGN KEY) 
--- - course_name (VARCHAR(200), FOREIGN KEY)
 -- - enrolled (BOOLEAN)
 
 CREATE TABLE IF NOT EXISTS students_courses (
     selected_course_id INT PRIMARY KEY AUTO_INCREMENT,
     instructor_course_id INT,
-    course_name VARCHAR(200),
-    enrolled BOOLEAN,
-    FOREIGN KEY (instructor_course_id) REFERENCES instructors_courses(instructor_id),
-    FOREIGN KEY (course_name) REFERENCES instructors_courses(course_name)
+    enrolled BOOLEAN
 );
 
 -- Instructors Courses Table
@@ -126,9 +117,7 @@ CREATE TABLE IF NOT EXISTS instructors_courses (
     seats_open INT DEFAULT 30,
     waitlist_capacity INT DEFAULT 10,
     waitlist_open INT DEFAULT 10,
-    credits INT DEFAULT 3,
-    FOREIGN KEY (instructor_id) REFERENCES instructors(instructor_id),
-    FOREIGN KEY (location_id) REFERENCES locations(location_id)
+    credits INT DEFAULT 3
 );
 
 -- Locations Table
@@ -167,3 +156,22 @@ CREATE TABLE IF NOT EXISTS instructors (
     phone VARCHAR(20),
     FOREIGN KEY (instructor_course_id) REFERENCES instructors_courses(instructor_course_id)
 );
+
+ALTER TABLE students
+    ADD FOREIGN KEY (time_block_id) REFERENCES time_blocks(time_block_id),
+    ADD FOREIGN KEY (selected_course_id) REFERENCES students_courses(selected_course_id);
+
+ALTER TABLE time_blocks
+    ADD FOREIGN KEY (student_id) REFERENCES students(student_id);
+
+ALTER TABLE cart
+    ADD FOREIGN KEY (student_id) REFERENCES students(student_id),
+    ADD FOREIGN KEY (time_block_id) REFERENCES time_blocks(time_block_id),
+    ADD FOREIGN KEY (selected_course_id) REFERENCES students_courses(selected_course_id);
+
+ALTER TABLE students_courses
+    ADD FOREIGN KEY (instructor_course_id) REFERENCES instructors_courses(instructor_course_id);
+
+ALTER TABLE instructors_courses
+    ADD FOREIGN KEY (instructor_id) REFERENCES instructors(instructor_id),
+    ADD FOREIGN KEY (location_id) REFERENCES locations(location_id);
