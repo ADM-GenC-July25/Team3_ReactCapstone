@@ -1,0 +1,7 @@
+com\scheduleplanner\backend\SchedulePlannerBackendApplication.class
+com\scheduleplanner\backend\config\DataInitializer.class
+com\scheduleplanner\backend\service\TimeBlockService.class
+com\scheduleplanner\backend\controller\TimeBlockController.class
+com\scheduleplanner\backend\config\CorsConfig.class
+com\scheduleplanner\backend\repository\TimeBlockRepository.class
+com\scheduleplanner\backend\model\TimeBlock.class
