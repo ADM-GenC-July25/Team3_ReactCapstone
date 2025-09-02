@@ -26,7 +26,7 @@ public class TimeBlockController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<TimeBlock> getTimeBlockById(@PathVariable Long id) {
+    public ResponseEntity<TimeBlock> getTimeBlockById(@PathVariable Integer id) {
         return timeBlockService.getTimeBlockById(id)
                 .map(timeBlock -> ResponseEntity.ok().body(timeBlock))
                 .orElse(ResponseEntity.notFound().build());
@@ -63,7 +63,7 @@ public class TimeBlockController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<TimeBlock> updateTimeBlock(@PathVariable Long id, 
+    public ResponseEntity<TimeBlock> updateTimeBlock(@PathVariable Integer id, 
                                                    @Valid @RequestBody TimeBlock timeBlockDetails) {
         try {
             // Check for overlapping time blocks (excluding the current one)
@@ -85,7 +85,7 @@ public class TimeBlockController {
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTimeBlock(@PathVariable Long id) {
+    public ResponseEntity<?> deleteTimeBlock(@PathVariable Integer id) {
         try {
             timeBlockService.deleteTimeBlock(id);
             return ResponseEntity.ok().build();

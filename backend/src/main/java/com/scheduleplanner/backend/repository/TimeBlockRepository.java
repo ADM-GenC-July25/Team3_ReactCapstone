@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TimeBlockRepository extends JpaRepository<TimeBlock, Long> {
+public interface TimeBlockRepository extends JpaRepository<TimeBlock, Integer> {
     
     // Find time blocks by day
     List<TimeBlock> findByDay(String day);

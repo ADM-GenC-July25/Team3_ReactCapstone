@@ -9,7 +9,8 @@ public class TimeBlock {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "time_block_id")
+    private Integer id;
     
     @NotBlank(message = "Title is required")
     @Column(nullable = false)
@@ -37,6 +38,12 @@ public class TimeBlock {
     @Column
     private String color;
     
+    @Column(name = "student_id")
+    private Integer studentId;
+    
+    @Column
+    private Integer weeks;
+    
     // Constructors
     public TimeBlock() {}
     
@@ -50,12 +57,24 @@ public class TimeBlock {
         this.color = color;
     }
     
+    public TimeBlock(String title, String day, String startTime, String endTime, String type, String description, String color, Integer studentId, Integer weeks) {
+        this.title = title;
+        this.day = day;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.type = type;
+        this.description = description;
+        this.color = color;
+        this.studentId = studentId;
+        this.weeks = weeks;
+    }
+    
     // Getters and Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
     
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
     
@@ -113,5 +132,21 @@ public class TimeBlock {
     
     public void setColor(String color) {
         this.color = color;
+    }
+    
+    public Integer getStudentId() {
+        return studentId;
+    }
+    
+    public void setStudentId(Integer studentId) {
+        this.studentId = studentId;
+    }
+    
+    public Integer getWeeks() {
+        return weeks;
+    }
+    
+    public void setWeeks(Integer weeks) {
+        this.weeks = weeks;
     }
 }

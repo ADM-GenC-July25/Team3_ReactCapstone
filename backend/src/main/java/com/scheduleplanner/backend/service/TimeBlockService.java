@@ -31,7 +31,7 @@ public class TimeBlockService {
         return timeBlockRepository.findAll();
     }
     
-    public Optional<TimeBlock> getTimeBlockById(Long id) {
+    public Optional<TimeBlock> getTimeBlockById(Integer id) {
         return timeBlockRepository.findById(id);
     }
     
@@ -52,7 +52,7 @@ public class TimeBlockService {
         return timeBlockRepository.save(timeBlock);
     }
     
-    public TimeBlock updateTimeBlock(Long id, TimeBlock timeBlockDetails) {
+    public TimeBlock updateTimeBlock(Integer id, TimeBlock timeBlockDetails) {
         TimeBlock timeBlock = timeBlockRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TimeBlock not found with id: " + id));
         
@@ -73,7 +73,7 @@ public class TimeBlockService {
         return timeBlockRepository.save(timeBlock);
     }
     
-    public void deleteTimeBlock(Long id) {
+    public void deleteTimeBlock(Integer id) {
         TimeBlock timeBlock = timeBlockRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TimeBlock not found with id: " + id));
         timeBlockRepository.delete(timeBlock);
