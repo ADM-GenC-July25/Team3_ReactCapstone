@@ -1,173 +1,8 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { getCompleteScheduleByStudent, getUserStudentId, getEventColor } from '../services/scheduleApi';
 
 // Create the context
 const ScheduleContext = createContext();
-
-// Initial sample data - unified schedule items with type identification
-const initialScheduleItems = [
-  // Courses
-  {
-    id: 1,
-    itemType: 'course',
-    name: "Computer Science 101",
-    subject: "CS",
-    course: "101",
-    section: "001",
-    startTime: "09:00",
-    endTime: "10:30",
-    days: ["Monday", "Wednesday"],
-    room: "Room 201",
-    instructor: "Dr. Smith",
-    courseDescription: "Introduction to Computer Science",
-    color: "#4CAF50",
-    isSelected: true,
-    status: "Enrolled",
-    seatsOpen: 16,
-    waitlistSeats: 0,
-    waitlistOpen: 10,
-    weeks: 15
-  },
-  {
-    id: 2,
-    itemType: 'course',
-    name: "Mathematics 205",
-    subject: "MATH",
-    course: "205",
-    section: "002",
-    startTime: "09:30", // CONFLICT: Overlaps with CS 101 on Monday/Wednesday
-    endTime: "10:45",
-    days: ["Monday", "Wednesday"],
-    room: "Room 305",
-    instructor: "Prof. Johnson",
-    courseDescription: "Advanced Calculus",
-    color: "#2196F3",
-    isSelected: true,
-    status: "Enrolled",
-    seatsOpen: 15,
-    waitlistSeats: 0,
-    waitlistOpen: 15,
-    weeks: 15
-  },
-  {
-    id: 3,
-    itemType: 'course',
-    name: "Physics Lab",
-    subject: "PHYS",
-    course: "101",
-    section: "003",
-    startTime: "14:00",
-    endTime: "16:00",
-    days: ["Friday"],
-    room: "Lab 102",
-    instructor: "Dr. Williams",
-    courseDescription: "Experimental Physics",
-    color: "#FF9800",
-    isSelected: true,
-    status: "Enrolled",
-    seatsOpen: 14,
-    waitlistSeats: 0,
-    waitlistOpen: 20,
-    weeks: 15
-  },
-  {
-    id: 4,
-    itemType: 'course',
-    name: "English Literature",
-    subject: "ENG",
-    course: "201",
-    section: "004",
-    startTime: "10:00", // CONFLICT: Overlaps with CS 101 and MATH 205 on Monday/Wednesday
-    endTime: "11:15",
-    days: ["Monday", "Wednesday", "Friday"],
-    room: "Room 110",
-    instructor: "Ms. Brown",
-    courseDescription: "Study of classic English literature",
-    color: "#9C27B0",
-    isSelected: true, // Changed to true to show conflicts
-    status: "Enrolled", // Changed to Enrolled to show conflicts
-    seatsOpen: 20,
-    waitlistSeats: 5,
-    waitlistOpen: 10,
-    weeks: 15
-  },
-  {
-    id: 5,
-    itemType: 'course',
-    name: "Chemistry 101",
-    subject: "CHEM",
-    course: "101",
-    section: "001",
-    startTime: "15:30", // CONFLICT: Overlaps with Physics Lab on Friday
-    endTime: "17:00",
-    days: ["Friday"],
-    room: "Lab 201",
-    instructor: "Dr. Davis",
-    courseDescription: "Introduction to Chemistry",
-    color: "#E91E63",
-    isSelected: true,
-    status: "Enrolled",
-    seatsOpen: 18,
-    waitlistSeats: 0,
-    waitlistOpen: 12,
-    weeks: 15
-  },
-  // Time Blocks
-  {
-    id: 6,
-    itemType: 'timeBlock',
-    title: 'Chess Club',
-    day: 'Monday',
-    startTime: '15:30',
-    endTime: '17:00',
-    type: 'club',
-    description: 'Weekly chess club meeting',
-    color: '#9C27B0'
-  },
-  {
-    id: 7,
-    itemType: 'timeBlock',
-    title: 'Part-time Job',
-    day: 'Wednesday',
-    startTime: '14:00',
-    endTime: '18:00',
-    type: 'job',
-    description: 'Customer service at local store',
-    color: '#FF5722'
-  },
-  {
-    id: 8,
-    itemType: 'timeBlock',
-    title: 'Study Break',
-    day: 'Friday',
-    startTime: '12:00',
-    endTime: '13:00',
-    type: 'break',
-    description: 'Lunch and relaxation',
-    color: '#4CAF50'
-  },
-  {
-    id: 9,
-    itemType: 'timeBlock',
-    title: 'Gym Session',
-    day: 'Tuesday',
-    startTime: '18:00',
-    endTime: '19:30',
-    type: 'personal',
-    description: 'Evening workout',
-    color: '#FF9800'
-  },
-  {
-    id: 10,
-    itemType: 'timeBlock',
-    title: 'Study Group',
-    day: 'Monday',
-    startTime: '10:00', // CONFLICT: Overlaps with CS 101 and MATH 205
-    endTime: '11:00',
-    type: 'study',
-    description: 'Group study session',
-    color: '#00BCD4'
-  }
-];
 
 // Utility functions for conflict detection
 const timeToMinutes = (time) => {
@@ -311,9 +146,113 @@ const findPotentialConflicts = (newItem, existingItems) => {
 
 // Schedule Provider Component
 export const ScheduleProvider = ({ children }) => {
-  const [scheduleItems, setScheduleItems] = useState(initialScheduleItems);
+  const [scheduleItems, setScheduleItems] = useState([]);
   const [conflicts, setConflicts] = useState([]);
   const [potentialConflicts, setPotentialConflicts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Helper function to convert time format from HH:mm:ss to HH:mm
+  const formatTime = (timeString) => {
+    if (!timeString) return timeString;
+    // Convert "18:00:00" to "18:00"
+    return timeString.substring(0, 5);
+  };
+
+  // Transform API data to internal format
+  const transformApiDataToScheduleItems = useCallback((apiData) => {
+    const items = [];
+    let nextId = 1;
+
+    console.log('Transforming API data:', apiData);
+
+    // Transform courses
+    if (apiData.courses) {
+      console.log('Processing courses:', apiData.courses);
+      apiData.courses.forEach(course => {
+        console.log('Processing course:', course);
+        // Parse days from the course day field (assuming single day from API)
+        let days = [];
+        if (course.courseDay) {
+          // Handle both single day and multiple days
+          days = [course.courseDay]; // API returns single day like "Monday"
+        }
+
+        items.push({
+          id: nextId++,
+          itemType: 'course',
+          name: course.courseName || `${course.courseCode} ${course.courseNumber}`,
+          subject: course.courseCode,
+          course: course.courseNumber,
+          section: "001", // Default section
+          startTime: formatTime(course.courseStartTime),
+          endTime: formatTime(course.courseEndTime),
+          days: days,
+          room: course.courseLocationName || "TBD",
+          instructor: course.instructorName || "TBD",
+          courseDescription: course.courseDescription || "",
+          color: getEventColor(null, 'course'),
+          isSelected: true,
+          status: course.enrolled ? "Enrolled" : "Waitlisted",
+          seatsOpen: 20,
+          waitlistSeats: 0,
+          waitlistOpen: 10,
+          weeks: course.courseWeeks || 15
+        });
+      });
+    }
+
+    // Transform time blocks
+    if (apiData.timeBlocks) {
+      console.log('Processing time blocks:', apiData.timeBlocks);
+      apiData.timeBlocks.forEach(timeBlock => {
+        console.log('Processing time block:', timeBlock);
+        items.push({
+          id: nextId++,
+          itemType: 'timeBlock',
+          title: timeBlock.timeBlockName,
+          day: timeBlock.timeBlockDay,
+          startTime: formatTime(timeBlock.timeBlockStartTime),
+          endTime: formatTime(timeBlock.timeBlockEndTime),
+          type: 'other', // Default type since API doesn't provide it
+          description: timeBlock.timeBlockDescription || '',
+          color: getEventColor('other'),
+          weeks: timeBlock.timeBlockWeeks || 15
+        });
+      });
+    }
+
+    console.log('Transformed schedule items:', items);
+    return items;
+  }, []);
+
+  // Load schedule data for a specific student
+  const loadScheduleData = useCallback(async (userEmail) => {
+    if (!userEmail) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const studentId = getUserStudentId(userEmail);
+      console.log(`Loading schedule for student ID: ${studentId}`);
+      
+      const apiData = await getCompleteScheduleByStudent(studentId);
+      console.log('API data received:', apiData);
+      
+      const transformedItems = transformApiDataToScheduleItems(apiData);
+      console.log('Transformed schedule items:', transformedItems);
+      
+      setScheduleItems(transformedItems);
+    } catch (err) {
+      console.error('Error loading schedule data:', err);
+      setError(err.message);
+      // Fall back to empty array on error
+      setScheduleItems([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [transformApiDataToScheduleItems]);
 
   // Add a new course with enhanced conflict detection
   const addCourse = useCallback((newCourse) => {
@@ -490,6 +429,8 @@ export const ScheduleProvider = ({ children }) => {
     scheduleItems,
     conflicts,
     potentialConflicts,
+    isLoading,
+    error,
     
     // Backward compatibility
     courses: getCourses(),
@@ -502,6 +443,7 @@ export const ScheduleProvider = ({ children }) => {
     updateTimeBlock,
     removeCourse,
     removeTimeBlock,
+    loadScheduleData,
     
     // Utilities
     getScheduleForDay,

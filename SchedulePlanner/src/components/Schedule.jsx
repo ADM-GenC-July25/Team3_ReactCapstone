@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useSchedule } from '../contexts/ScheduleContext';
+import { AuthContext } from '../context/AuthContext';
 import ConflictDisplay from './ConflictDisplay';
 import './Schedule.css';
 
@@ -7,34 +8,50 @@ const Schedule = () => {
   const { 
     getAllScheduleItems, 
     conflicts, 
-    potentialConflicts 
+    potentialConflicts,
+    isLoading,
+    error,
+    loadScheduleData
   } = useSchedule();
 
+  const { isLoggedIn, userInfo } = useContext(AuthContext);
   const [currentWeek, setCurrentWeek] = useState(2);
   const totalWeeks = 15;
+
+  // Load schedule data when user logs in
+  useEffect(() => {
+    if (isLoggedIn && userInfo?.email) {
+      loadScheduleData(userInfo.email);
+    }
+  }, [isLoggedIn, userInfo?.email, loadScheduleData]);
 
   // Get all schedule items (courses + time blocks) from ScheduleContext
   const allScheduleItems = getAllScheduleItems();
 
   // Transform schedule items into events format for the calendar
   const scheduleEvents = allScheduleItems.map(item => {
+    console.log('Processing schedule item for calendar:', item);
     if (item.itemType === 'course') {
       // Handle courses with multiple days
-      return item.days.map(day => ({
-        day: day,
-        startTime: item.startTime,
-        endTime: item.endTime,
-        subject: item.name,
-        instructor: item.instructor,
-        location: item.room,
-        classId: item.id,
-        weeks: item.weeks,
-        color: item.color,
-        isSelected: item.isSelected
-      }));
+      return item.days.map(day => {
+        const event = {
+          day: day,
+          startTime: item.startTime,
+          endTime: item.endTime,
+          subject: item.name,
+          instructor: item.instructor,
+          location: item.room,
+          classId: item.id,
+          weeks: item.weeks,
+          color: item.color,
+          isSelected: item.isSelected
+        };
+        console.log('Created course event:', event);
+        return event;
+      });
     } else {
       // Handle time blocks (single day)
-      return [{
+      const event = {
         day: item.day,
         startTime: item.startTime,
         endTime: item.endTime,
@@ -45,9 +62,13 @@ const Schedule = () => {
         weeks: item.weeks || 15,
         color: item.color,
         isSelected: true
-      }];
+      };
+      console.log('Created time block event:', event);
+      return [event];
     }
   }).flat().filter(event => event.isSelected);
+
+  console.log('Final schedule events for calendar:', scheduleEvents);
 
   // Calendar data
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -128,20 +149,30 @@ const Schedule = () => {
     const days = [event.day];
     const targetDay = specificDay || days[0];
     
+    console.log(`Getting position for event on ${targetDay}:`, event);
+    
     const dayIndex = weekDays.indexOf(targetDay);
     const startIndex = timeSlots.indexOf(event.startTime);
     const endIndex = timeSlots.indexOf(event.endTime);
     
+    console.log(`Day index: ${dayIndex}, Start index: ${startIndex}, End index: ${endIndex}`);
+    console.log(`Looking for start time: "${event.startTime}" in timeSlots`);
+    console.log(`Looking for end time: "${event.endTime}" in timeSlots`);
+    
     if (dayIndex === -1 || startIndex === -1 || endIndex === -1) {
+      console.log('Position calculation failed - index not found');
       return null;
     }
     
-    return {
+    const position = {
       gridColumn: dayIndex + 2, // +2 because first column is time labels
       gridRowStart: startIndex + 2, // +2 because first row is headers
       gridRowEnd: endIndex + 2,
       backgroundColor: event.color || '#E0E0E0'
     };
+    
+    console.log('Calculated position:', position);
+    return position;
   };
 
   const isEventActiveInWeek = (event, weekNumber) => {
@@ -189,40 +220,61 @@ const Schedule = () => {
 
       <h2>My Schedule</h2>
 
-      {/* Week Selector */}
-      {renderWeekSelector()}
+      {/* Loading state */}
+      {isLoading && (
+        <div className="loading-container" style={{ textAlign: 'center', padding: '2rem' }}>
+          <div>Loading your schedule...</div>
+        </div>
+      )}
 
-      {/* Calendar View */}
-      <div className="calendar-section">
-        <div className="calendar-container">
-          <div className="calendar-grid">
-            {/* Header row */}
-            <div className="calendar-header time-header"></div>
-            {weekDays.map(day => (
-              <div key={day} className="calendar-header day-header">
-                <div className="day-name">{day}</div>
-              </div>
-            ))}
-
-            {/* Time slots */}
-            {timeSlots.map((time, index) => (
-              <React.Fragment key={time}>
-                <div className="time-label">{formatTimeDisplay(time)}</div>
-                {weekDays.map(day => (
-                  <div key={`${day}-${time}`} className="time-slot"></div>
-                ))}
-              </React.Fragment>
-            ))}
-          </div>
-
-          {/* Schedule events overlay */}
-          <div className="events-overlay">
-            {scheduleEvents.map((event, index) => {
-              return renderEventForAllDays(event, index);
-            })}
+      {/* Error state */}
+      {error && (
+        <div className="error-container" style={{ textAlign: 'center', padding: '2rem' }}>
+          <div className="alert alert-danger">
+            Error loading schedule: {error}
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Schedule content - only show when not loading and no error */}
+      {!isLoading && !error && (
+        <>
+          {/* Week Selector */}
+          {renderWeekSelector()}
+
+          {/* Calendar View */}
+          <div className="calendar-section">
+            <div className="calendar-container">
+              <div className="calendar-grid">
+                {/* Header row */}
+                <div className="calendar-header time-header"></div>
+                {weekDays.map(day => (
+                  <div key={day} className="calendar-header day-header">
+                    <div className="day-name">{day}</div>
+                  </div>
+                ))}
+
+                {/* Time slots */}
+                {timeSlots.map((time, index) => (
+                  <React.Fragment key={time}>
+                    <div className="time-label">{formatTimeDisplay(time)}</div>
+                    {weekDays.map(day => (
+                      <div key={`${day}-${time}`} className="time-slot"></div>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {/* Schedule events overlay */}
+              <div className="events-overlay">
+                {scheduleEvents.map((event, index) => {
+                  return renderEventForAllDays(event, index);
+                })}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
