@@ -69,7 +69,7 @@ public class TimeBlockController {
             // Check for overlapping time blocks (excluding the current one)
             List<TimeBlock> overlapping = timeBlockService.checkForOverlaps(
                 timeBlockDetails.getDay(), timeBlockDetails.getStartTime(), timeBlockDetails.getEndTime());
-            overlapping.removeIf(tb -> tb.getId().equals(id));
+            overlapping.removeIf(tb -> tb.getDay().equals(id));
             
             if (!overlapping.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
