@@ -29,26 +29,28 @@ const Homepage = ({ onNavigateToTab }) => {
         </div>
       </div>
 
-      <div className="features-section">
-        <h2>Features</h2>
-        <div className="features-grid">
-          <div className="feature-card clickable" onClick={() => handleFeatureClick('schedule')}>
-            <div className="feature-icon">📅</div>
-            <h3>Schedule Management</h3>
-            <p>View and manage your daily schedule with ease</p>
-          </div>
-          <div className="feature-card clickable" onClick={() => handleFeatureClick('courses')}>
-            <div className="feature-icon">📚</div>
-            <h3>Course Selection</h3>
-            <p>Browse and enroll in courses with conflict detection</p>
-          </div>
-          <div className="feature-card clickable" onClick={() => handleFeatureClick('timeblocks')}>
-            <div className="feature-icon">⏰</div>
-            <h3>Time Blocks</h3>
-            <p>Schedule personal activities and commitments</p>
+      {isLoggedIn && (
+        <div className="features-section">
+          <h2>Features</h2>
+          <div className="features-grid">
+            <div className="feature-card clickable" onClick={() => handleFeatureClick('schedule')}>
+              <div className="feature-icon">📅</div>
+              <h3>Schedule Management</h3>
+              <p>View and manage your daily schedule with ease</p>
+            </div>
+            <div className="feature-card clickable" onClick={() => handleFeatureClick('courses')}>
+              <div className="feature-icon">📚</div>
+              <h3>Course Selection</h3>
+              <p>Browse and enroll in courses with conflict detection</p>
+            </div>
+            <div className="feature-card clickable" onClick={() => handleFeatureClick('timeblocks')}>
+              <div className="feature-icon">⏰</div>
+              <h3>Time Blocks</h3>
+              <p>Schedule personal activities and commitments</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="getting-started-section">
         <h2>Getting Started</h2>

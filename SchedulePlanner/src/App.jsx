@@ -11,6 +11,7 @@ import Toast from './components/Toast'
 import { AuthContext } from './context/AuthContext'
 import { useCart } from './context/CartContext'
 import { ScheduleProvider } from './contexts/ScheduleContext'
+import DailyScheduling from './components/DailyScheduling'
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
