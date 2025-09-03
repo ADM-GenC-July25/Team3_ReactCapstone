@@ -70,14 +70,14 @@ public class CartRepositoryImpl implements CartRepository {
             }
             
             // Add time block to time_blocks table
-            String sql = "INSERT INTO time_blocks (title, start_time, end_time, day, weeks, description, student_id) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO time_blocks (title, start_time, end_time, day, weeks, description, student_id, type) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             
             logger.info("Executing SQL: {}", sql);
             logger.info("Parameters: title={}, startTime={}, endTime={}, day={}, weeks={}, description={}, studentId={}", 
                 title, startTime, endTime, day, weeks, description, studentId);
             
-            int rowsAffected = jdbcTemplate.update(sql, title, startTime, endTime, day, weeks, description, studentId);
+            int rowsAffected = jdbcTemplate.update(sql, title, startTime, endTime, day, weeks, description, studentId, "");
             logger.info("Time block insert result - rows affected: {}", rowsAffected);
             
             return rowsAffected > 0;
