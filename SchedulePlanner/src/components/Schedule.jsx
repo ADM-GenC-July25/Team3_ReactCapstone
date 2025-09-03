@@ -183,7 +183,7 @@ const Schedule = () => {
 
       <div className="alert-section">
         <div className="alert">
-          You are viewing your current schedule. Use the cart to add new courses.
+          You are viewing your current schedule. Use the cart to add new courses and time blocks.
         </div>
       </div>
 

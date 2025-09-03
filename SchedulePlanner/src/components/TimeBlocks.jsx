@@ -7,9 +7,10 @@ import './TimeBlocks.css';
 const TimeBlocks = () => {
   const { addToCart } = useCart();
   const { 
-    getTimeBlocks, 
-    addTimeBlock, 
-    removeTimeBlock,
+    getUserTimeBlocks, 
+    createTimeBlock, 
+    removeUserTimeBlock,
+    getTimeBlocks,
     conflicts, 
     potentialConflicts 
   } = useSchedule();
@@ -26,8 +27,10 @@ const TimeBlocks = () => {
     description: ''
   });
 
-  // Get time blocks from ScheduleContext
-  const timeBlocks = getTimeBlocks();
+  // Get user's created time blocks (not yet in schedule)
+  const userTimeBlocks = getUserTimeBlocks();
+  // Get scheduled time blocks (for calendar view)
+  const scheduledTimeBlocks = getTimeBlocks();
 
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const timeSlots = [
@@ -90,15 +93,14 @@ const TimeBlocks = () => {
     
     const timeBlockToAdd = {
       ...newTimeBlock,
-      id: Date.now(), // Generate unique ID
       color
     };
 
-    console.log('Adding time block:', timeBlockToAdd); // Debug log
+    console.log('Creating time block:', timeBlockToAdd); // Debug log
 
     try {
-      const result = addTimeBlock(timeBlockToAdd);
-      console.log('Add result:', result); // Debug log
+      // Add to user's time block collection
+      const result = createTimeBlock(timeBlockToAdd);
       
       if (result.success) {
         // Reset form on success
@@ -111,19 +113,16 @@ const TimeBlocks = () => {
           description: ''
         });
         setShowAddForm(false);
-        console.log('Time block added successfully!'); // Debug log
-      } else {
-        console.log('Time block not added due to conflicts:', result.conflicts); // Debug log
-        // Conflicts will be shown via ConflictDisplay
+        console.log('Time block created successfully!'); // Debug log
       }
     } catch (error) {
-      console.error('Error adding time block:', error);
-      alert('Error adding time block. Please try again.');
+      console.error('Error creating time block:', error);
+      alert('Error creating time block. Please try again.');
     }
   };
 
   const handleDeleteTimeBlock = (id) => {
-    removeTimeBlock(id);
+    removeUserTimeBlock(id);
   };
 
   const renderWeekSelector = () => {
@@ -271,7 +270,7 @@ const TimeBlocks = () => {
               onClick={handleAddTimeBlock}
               disabled={!newTimeBlock.title.trim()}
             >
-              Add Time Block
+              Create Time Block
             </button>
           </div>
         </div>
@@ -280,11 +279,11 @@ const TimeBlocks = () => {
       {/* Time Blocks List */}
       <div className="timeblocks-list">
         <h3>Your Time Blocks</h3>
-        {timeBlocks.length === 0 ? (
-          <p className="no-blocks">No time blocks added yet. Click "Add Time Block" to get started!</p>
+        {userTimeBlocks.length === 0 ? (
+          <p className="no-blocks">No time blocks created yet. Click "Add Time Block" to create one and add it to your cart!</p>
         ) : (
           <div className="blocks-grid">
-            {timeBlocks.map(block => (
+            {userTimeBlocks.map(block => (
               <div key={block.id} className="timeblock-card" style={{borderLeftColor: block.color}}>
                 <div className="block-header">
                   <h4>{block.title}</h4>
@@ -349,7 +348,7 @@ const TimeBlocks = () => {
 
           {/* Time blocks overlay */}
           <div className="events-overlay">
-            {timeBlocks.map((block, index) => {
+            {scheduledTimeBlocks.map((block, index) => {
               const position = getEventPosition(block);
               if (!position) return null;
               
