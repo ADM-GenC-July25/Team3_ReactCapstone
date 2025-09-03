@@ -44,10 +44,10 @@ public class TimeBlockService {
     }
     
     public TimeBlock createTimeBlock(TimeBlock timeBlock) {
-        // Set color based on type if not provided
-        if (timeBlock.getColor() == null || timeBlock.getColor().isEmpty()) {
-            timeBlock.setColor(TYPE_COLORS.getOrDefault(timeBlock.getType(), TYPE_COLORS.get("other")));
-        }
+//        // Set color based on type if not provided
+//        if (timeBlock.getColor() == null || timeBlock.getColor().isEmpty()) {
+//            timeBlock.setColor(TYPE_COLORS.getOrDefault(timeBlock.getType(), TYPE_COLORS.get("other")));
+//        }
         
         return timeBlockRepository.save(timeBlock);
     }
@@ -60,15 +60,15 @@ public class TimeBlockService {
         timeBlock.setDay(timeBlockDetails.getDay());
         timeBlock.setStartTime(timeBlockDetails.getStartTime());
         timeBlock.setEndTime(timeBlockDetails.getEndTime());
-        timeBlock.setType(timeBlockDetails.getType());
+//        timeBlock.setType(timeBlockDetails.getType());
         timeBlock.setDescription(timeBlockDetails.getDescription());
         
         // Update color based on type if not provided
-        if (timeBlockDetails.getColor() == null || timeBlockDetails.getColor().isEmpty()) {
-            timeBlock.setColor(TYPE_COLORS.getOrDefault(timeBlockDetails.getType(), TYPE_COLORS.get("other")));
-        } else {
-            timeBlock.setColor(timeBlockDetails.getColor());
-        }
+//        if (timeBlockDetails.getColor() == null || timeBlockDetails.getColor().isEmpty()) {
+//            timeBlock.setColor(TYPE_COLORS.getOrDefault(timeBlockDetails.getType(), TYPE_COLORS.get("other")));
+//        } else {
+//            timeBlock.setColor(timeBlockDetails.getColor());
+//        }
         
         return timeBlockRepository.save(timeBlock);
     }

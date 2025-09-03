@@ -29,21 +29,30 @@ public class TimeBlock {
     @Column(length = 500)
     private String description;
 
-    @Column
     private String color;
 
     @Column(name = "student_id")
     private Integer studentId;
 
-    @Column(name = "type", nullable = false)
     private String type;
-
-
 
     // Constructors
     public TimeBlock() {}
 
-    public TimeBlock(String title, String day, String startTime, String endTime, String type, String description, String color) {
+//    public TimeBlock(Integer timeBlockId, String title, String startTime, String endTime, String day, Integer weeks,
+//			String description, Integer studentId) {
+//		super();
+//		this.timeBlockId = timeBlockId;
+//		this.title = title;
+//		this.startTime = startTime;
+//		this.endTime = endTime;
+//		this.day = day;
+//		this.weeks = weeks;
+//		this.description = description;
+//		this.studentId = studentId;
+//	}
+
+	public TimeBlock(String title, String day, String startTime, String endTime, String type, String description, String color) {
         this.title = title;
         this.day = day;
         this.startTime = startTime;

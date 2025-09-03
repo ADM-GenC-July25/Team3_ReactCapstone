@@ -1,5 +1,7 @@
 package com.scheduleplanner.backend.dto;
 
+import java.util.List;
+
 public class CartItemDTO {
 
     private Integer itemId;
@@ -7,7 +9,7 @@ public class CartItemDTO {
     private String name;
     private String startTime;
     private String endTime;
-    private String day;
+    private List<String> days;  // For courses with multiple days
     private String description;
     private String instructor;
     private String location;
@@ -18,14 +20,14 @@ public class CartItemDTO {
     public CartItemDTO() {}
 
     public CartItemDTO(Integer itemId, String itemType, String name, String startTime,
-                       String endTime, String day, String description, String instructor,
+                       String endTime, List<String> days, String description, String instructor,
                        String location, Integer seatsOpen, Integer credits) {
         this.itemId = itemId;
         this.itemType = itemType;
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.day = day;
+        this.days = days;
         this.description = description;
         this.instructor = instructor;
         this.location = location;
@@ -74,15 +76,15 @@ public class CartItemDTO {
         this.endTime = endTime;
     }
 
-    public String getDay() {
-        return day;
-    }
+    public List<String> getDays() {
+		return days;
+	}
 
-    public void setDay(String day) {
-        this.day = day;
-    }
+	public void setDays(List<String> days) {
+		this.days = days;
+	}
 
-    public String getDescription() {
+	public String getDescription() {
         return description;
     }
 
