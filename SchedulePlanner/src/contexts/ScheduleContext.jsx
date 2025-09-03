@@ -234,7 +234,7 @@ export const ScheduleProvider = ({ children }) => {
     setError(null);
 
     try {
-      const studentId = getUserStudentId(userEmail);
+      const studentId = await getUserStudentId(userEmail);
       console.log(`Loading schedule for student ID: ${studentId}`);
       
       const apiData = await getCompleteScheduleByStudent(studentId);

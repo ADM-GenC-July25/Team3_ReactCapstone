@@ -2,10 +2,10 @@
 -- Run this script in your MySQL database to create the database and user
 
 -- Create database
-CREATE DATABASE IF NOT EXISTS schedule_planner;
+CREATE DATABASE IF NOT EXISTS team3capstonedb;
 
 -- Use the database
-USE schedule_planner;
+USE team3capstonedb;
 
 -- Show databases to verify creation
 SHOW DATABASES;
@@ -14,14 +14,14 @@ SHOW DATABASES;
 SELECT DATABASE();
 
 -- Students table
--- - student_id (BIGINT, PRIMARY KEY, AUTO_INCREMENT)
+-- - student_id (INT, PRIMARY KEY, AUTO_INCREMENT)
 -- - full_name (VARCHAR(50))
 -- - username (VARCHAR(50), UNIQUE, NOT NULL)
 -- - email (VARCHAR(100), UNIQUE, NOT NULL)
 -- - password_hash (VARCHAR(255), NOT NULL)
 
 CREATE TABLE IF NOT EXISTS students (
-    student_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT PRIMARY KEY AUTO_INCREMENT,
     full_name VARCHAR(50) NOT NULL,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS students (
 
 
 -- Time Blocks table
--- - time_block_id (BIGINT, PRIMARY KEY, AUTO_INCREMENT)
+-- - time_block_id (INT, PRIMARY KEY, AUTO_INCREMENT)
 -- - title (VARCHAR(200), NOT NULL) -- e.g., "Chess Club", "Part-time Job"
 -- - start_time (TIME, NOT NULL) -- e.g., "15:30:00"
 -- - end_time (TIME, NOT NULL) -- e.g., "17:00:00"
@@ -39,10 +39,10 @@ CREATE TABLE IF NOT EXISTS students (
 -- - weeks (INT)
 -- - description (TEXT)
 -- - color (VARCHAR(7)) -- e.g., "#9C27B0"
--- - student_id (BIGINT, FOREIGN KEY)
+-- - student_id (INT, FOREIGN KEY)
 
 CREATE TABLE IF NOT EXISTS time_blocks (
-    time_block_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    time_block_id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(200) NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
@@ -51,33 +51,33 @@ CREATE TABLE IF NOT EXISTS time_blocks (
     weeks INT,
     description TEXT,
     color VARCHAR(7),
-    student_id BIGINT
+    student_id INT
 );
 
 -- Cart Table
--- - cart_id (BIGINT, PRIMARY KEY, AUTO_INCREMENT)
--- - student_id (BIGINT, FOREIGN KEY)
--- - time_block_id (BIGINT, FOREIGN KEY)
--- - selected_course_id (BIGINT, FOREIGN KEY)
+-- - cart_id (INT, PRIMARY KEY, AUTO_INCREMENT)
+-- - student_id (INT, FOREIGN KEY)
+-- - time_block_id (INT, FOREIGN KEY)
+-- - selected_course_id (INT, FOREIGN KEY)
 
 CREATE TABLE IF NOT EXISTS cart (
-    cart_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    student_id BIGINT,
-    time_block_id BIGINT,
-    selected_course_id BIGINT
+    cart_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    time_block_id INT,
+    selected_course_id INT
 );
 
 
 -- Students Courses Table
--- - selected_course_id (BIGINT, PRIMARY KEY, AUTO_INCREMENT)
--- - instructor_course_id(BIGINT, FOREIGN KEY) 
--- - student_id(BIGINT, FOREIGN KEY) 
+-- - selected_course_id (INT, PRIMARY KEY, AUTO_INCREMENT)
+-- - instructor_course_id(INT, FOREIGN KEY) 
+-- - student_id(INT, FOREIGN KEY) 
 -- - enrolled (BOOLEAN)
 
 CREATE TABLE IF NOT EXISTS students_courses (
-    selected_course_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    instructor_course_id BIGINT,
-    student_id BIGINT,
+    selected_course_id INT PRIMARY KEY AUTO_INCREMENT,
+    instructor_course_id INT,
+    student_id INT,
     enrolled BOOLEAN
 );
 
@@ -161,10 +161,10 @@ CREATE TABLE IF NOT EXISTS instructors (
 ALTER TABLE time_blocks
     ADD FOREIGN KEY (student_id) REFERENCES students(student_id);
 
-ALTER TABLE cart
-    ADD FOREIGN KEY (student_id) REFERENCES students(student_id),
-    ADD FOREIGN KEY (time_block_id) REFERENCES time_blocks(time_block_id),
-    ADD FOREIGN KEY (selected_course_id) REFERENCES students_courses(selected_course_id);
+-- ALTER TABLE cart
+--     ADD FOREIGN KEY (student_id) REFERENCES students(student_id),
+--     ADD FOREIGN KEY (time_block_id) REFERENCES time_blocks(time_block_id),
+--     ADD FOREIGN KEY (selected_course_id) REFERENCES students_courses(selected_course_id);
 
 ALTER TABLE students_courses
     ADD FOREIGN KEY (instructor_course_id) REFERENCES instructors_courses(instructor_course_id),
@@ -177,7 +177,7 @@ ALTER TABLE instructors_courses
 
 -- Input script for the schedule planner
 
-use schedule_planner;
+USE team3capstonedb;
 -- locations data
 INSERT INTO locations(name, building, floor, capacity, location_type) VALUES
 ('Room 101', 'Science Hall', 1, 40, 'classroom'),
@@ -192,7 +192,7 @@ INSERT INTO instructors(name, email, department, office_location, phone) VALUES
 -- instructors_courses data
 INSERT INTO instructors_courses (course_name, course_code, course_number, section, description, instructor_id, location_id, start_time, end_time, day, credits) VALUES
 ('Intro to CompSci', 'CS', '101', '001', 'Basic Concepts of Programming', 1,1,'09:00:00', '10:30:00', 'Monday', 3),
-('Intro to Math', 'MT', '201', '002', 'Basic Concepts of Math', 2,1,'11:00:00', '12:30:00', 'Tuesday', 4),
+('Intro to Math', 'MT', '201', '002', 'Basic Concepts of Math', 2,2,'11:00:00', '12:30:00', 'Tuesday', 4),
 ('Intro to English', 'EN', '301', '003', 'Basic Concepts of English', 3,3, '14:00:00', '15:30:00', 'Wednesday', 4);
 
 -- update instructors with instructor_course_id (to resolve FK loop)
@@ -207,15 +207,27 @@ INSERT INTO students(full_name, username, email, password_hash) VALUES
 ('Student 2 Name Here', 'stu2', 'student2@example.com', 'hashed_pw_2'),
 ('Student 3 Name Here', 'stu3', 'student3@example.com', 'hashed_pw_3');
 
+-- Team members
 INSERT INTO students(full_name, username, email, password_hash) VALUES
-('Patralika Ghosh', 'patralika@gmail.com', 'patralika@gmail.com', 'test');
+('Vishaka Vinod', 'Vishaka@gmail.com', 'Vishaka@gmail.com', 'test'),
+('Patralika Ghosh', 'Patralika@gmail.com', 'Patralika@gmail.com', 'test'),
+('Nikhil Jeeva', 'Nikhil@gmail.com', 'Nikhil@gmail.com', 'test'),
+('Rhushabh Bontapalle', 'Rhushabh@gmail.com', 'Rhushabh@gmail.com', 'test'),
+('Kinjal Dey', 'Kinjal@gmail.com', 'Kinjal@gmail.com', 'test');
 
 -- Time Blocks data
 INSERT INTO time_blocks(title, start_time, end_time, day, type, weeks, description, color, student_id) VALUES
 ('Part-time Job', '15:30:00', '17:30:00', 'Monday', 'job', 12, 'Work at Macys', '#FF5722', 1),
 ('Basketball Practice', '18:00:00', '20:00:00', 'Thursday', 'club', 10, 'Training', '#9C27B0', 1),
 ('Chess Club', '18:00:00', '19:30:00', 'Wednesday', 'club', 10, 'Training', '#9C27B0', 2),
-('Chess Club', '18:00:00', '19:30:00', 'Wednesday', 'club', 10, 'Training', '#9C27B0', 3);
+('Chess Club', '18:00:00', '19:30:00', 'Wednesday', 'club', 10, 'Training', '#9C27B0', 3),
+('Chess Club', '18:00:00', '19:30:00', 'Wednesday', 'club', 10, 'Training', '#9C27B0', 4),
+('Part-time Job', '15:30:00', '17:30:00', 'Monday', 'job', 12, 'Work at Macys', '#FF5722', 4),
+('Chess Club', '18:00:00', '19:30:00', 'Wednesday', 'club', 10, 'Training', '#9C27B0', 5),
+('Part-time Job', '15:30:00', '19:30:00', 'Monday', 'job', 12, 'Work at Macys', '#FF5722', 5),
+('Chess Club', '18:00:00', '19:30:00', 'Wednesday', 'club', 10, 'Training', '#9C27B0', 6),
+('Chess Club', '18:00:00', '19:30:00', 'Wednesday', 'club', 10, 'Training', '#9C27B0', 7),
+('Chess Club', '18:00:00', '19:30:00', 'Wednesday', 'club', 10, 'Training', '#9C27B0', 8);
 
 -- Student Course Enrollments 
 INSERT INTO students_courses (student_id, instructor_course_id, enrolled) VALUES
@@ -223,7 +235,15 @@ INSERT INTO students_courses (student_id, instructor_course_id, enrolled) VALUES
 (1,2,FALSE),
 (2,1,TRUE),
 (2,3,TRUE),
-(3,2,TRUE);
+(3,2,TRUE),
+(4,1,TRUE),
+(4,2,TRUE),
+(5,3,TRUE),
+(5,1,TRUE),
+(6,3,TRUE),
+(7,2,TRUE),
+(8,2,TRUE);
+
 
 -- student1 has 2 time_blocks + 1 course enrolled + 1 course waitlisted
 -- student2 has 1 time_blocks + 2 courses
