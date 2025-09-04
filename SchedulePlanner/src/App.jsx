@@ -105,9 +105,6 @@ function App() {
                     🛒 Cart
                     {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
                   </button>
-                  <span className="user-info">
-                    Welcome, {userInfo?.fullName || userInfo?.email}
-                  </span>
                   <button
                     className={`tab-button`}
                     onClick={handleLogout}

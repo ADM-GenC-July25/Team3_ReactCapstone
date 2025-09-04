@@ -198,7 +198,7 @@ export default function CourseSelection() {
                     </div>
                 )}
             </div>
-
+            
             {/* Show available courses to add */}
             <div className="available-courses-section">
                 {filteredCourses.length === 0 ? (
@@ -213,44 +213,44 @@ export default function CourseSelection() {
                         </button>
                     </div>
                 ) : (
-                    <div className="courses-grid">
+                <div className="courses-grid">
                         {filteredCourses.map(course => {
                             const inCart = isInCart(course.id);
                             
                             return (
                                 <div key={course.id} className={`course-card ${inCart ? 'in-cart' : ''}`}>
-                                    <div className="course-header">
-                                        <h3>{course.name}</h3>
-                                        <span className="course-code">{course.subject} {course.course}</span>
+                            <div className="course-header">
+                                <h3>{course.name}</h3>
+                                <span className="course-code">{course.subject} {course.course}</span>
                                         {inCart && <span className="cart-indicator">📋 In Cart</span>}
-                                    </div>
-                                    <div className="course-details">
-                                        <p><strong>Time:</strong> {course.startTime} - {course.endTime}</p>
-                                        <p><strong>Days:</strong> {Array.isArray(course.days) ? course.days.join(', ') : course.days}</p>
-                                        <p><strong>Instructor:</strong> {course.instructor}</p>
-                                        <p><strong>Location:</strong> {course.room}</p>
-                                        <p><strong>Seats Open:</strong> {course.seatsOpen}</p>
-                                    </div>
-                                    <div className="course-actions">
-                                        <button 
-                                            className="btn btn-info"
-                                            onClick={() => setSelectedCourse(course)}
-                                        >
-                                            View Details
-                                        </button>
-                                        <button 
+                            </div>
+                            <div className="course-details">
+                                <p><strong>Time:</strong> {course.startTime} - {course.endTime}</p>
+                                <p><strong>Days:</strong> {Array.isArray(course.days) ? course.days.join(', ') : course.days}</p>
+                                <p><strong>Instructor:</strong> {course.instructor}</p>
+                                <p><strong>Location:</strong> {course.room}</p>
+                                <p><strong>Seats Open:</strong> {course.seatsOpen}</p>
+                            </div>
+                            <div className="course-actions">
+                                <button 
+                                    className="btn btn-info"
+                                    onClick={() => setSelectedCourse(course)}
+                                >
+                                    View Details
+                                </button>
+                                <button 
                                             className={`btn ${inCart ? 'btn-disabled' : 'btn-primary'}`}
-                                            onClick={() => handleAddToCart(course)}
+                                    onClick={() => handleAddToCart(course)}
                                             disabled={inCart}
                                             title={inCart ? 'Already in cart' : 'Add to cart'}
-                                        >
+                                >
                                             {inCart ? 'In Cart' : 'Add to Cart'}
-                                        </button>
-                                    </div>
-                                </div>
+                                </button>
+                            </div>
+                        </div>
                             );
                         })}
-                    </div>
+                </div>
                 )}
             </div>
 

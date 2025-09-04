@@ -20,7 +20,6 @@ const Homepage = ({ onNavigateToTab }) => {
           Organize your daily schedule with ease and efficiency
         </p>
         <div className="hero-description">
-          {isLoggedIn && <h2>Hello {userInfo.first_name} {userInfo.last_name},</h2>}
           <p>
             Welcome to Schedule Planner - your comprehensive solution for managing 
             daily schedules, classes, and appointments. Create, view, and organize 

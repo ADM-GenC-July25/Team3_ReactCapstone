@@ -1,7 +1,16 @@
 import { createContext, useState, useEffect } from 'react';
-import authService from '../services/authService';
 
 export const AuthContext = createContext();
+
+// Hardcoded credentials
+const HARDCODED_EMAIL = "nikhil@gmail.com";
+const HARDCODED_PASSWORD = "test123";
+const HARDCODED_USER_INFO = {
+    email: "nikhil@gmail.com",
+    fullName: "Nikhil",
+    username: "nikhil",
+    loginTime: null
+};
 
 export function AuthProvider({ children }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -11,10 +20,18 @@ export function AuthProvider({ children }) {
     // Check localStorage when app starts
     useEffect(() => {
         const checkAuth = () => {
-            if (authService.isAuthenticated()) {
-                const user = authService.getCurrentUser();
-                setUserInfo(user);
-                setIsLoggedIn(true);
+            const savedAuth = localStorage.getItem('isAuthenticated');
+            const savedUser = localStorage.getItem('userInfo');
+            
+            if (savedAuth === 'true' && savedUser) {
+                try {
+                    setUserInfo(JSON.parse(savedUser));
+                    setIsLoggedIn(true);
+                } catch (error) {
+                    console.error('Error parsing saved user info:', error);
+                    localStorage.removeItem('isAuthenticated');
+                    localStorage.removeItem('userInfo');
+                }
             }
             setLoading(false);
         };
@@ -22,46 +39,62 @@ export function AuthProvider({ children }) {
         checkAuth();
     }, []);
 
-    // Login function - calls backend API
+    // Login function - validates against hardcoded credentials
     const login = async (email, password) => {
+        // Simulate network delay for realistic UX
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         try {
-            const response = await authService.login(email, password);
-            const user = authService.getCurrentUser();
-            setUserInfo(user);
+            // Validate hardcoded credentials
+            if (email.toLowerCase().trim() !== HARDCODED_EMAIL.toLowerCase() || password !== HARDCODED_PASSWORD) {
+                throw new Error('Invalid email or password');
+            }
+            
+            // Create user info with current login time
+            const userWithLoginTime = {
+                ...HARDCODED_USER_INFO,
+                loginTime: new Date().toISOString()
+            };
+            
+            // Save authentication state
+            localStorage.setItem('isAuthenticated', 'true');
+            localStorage.setItem('userInfo', JSON.stringify(userWithLoginTime));
+            
+            setUserInfo(userWithLoginTime);
             setIsLoggedIn(true);
-            return { success: true, data: response };
+            
+            return { success: true, data: userWithLoginTime };
         } catch (error) {
             console.error('Login failed:', error);
             return { success: false, error: error.message };
         }
     };
 
-    // Register function - calls backend API
+    // Register function - disabled for hardcoded system
     const register = async (fullName, username, email, password) => {
-        try {
-            const response = await authService.register(fullName, username, email, password);
-            const user = authService.getCurrentUser();
-            setUserInfo(user);
-            setIsLoggedIn(true);
-            return { success: true, data: response };
-        } catch (error) {
-            console.error('Registration failed:', error);
-            return { success: false, error: error.message };
-        }
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        return { 
+            success: false, 
+            error: 'Registration is disabled. Please use the provided login credentials.' 
+        };
     };
 
-    // Logout function - calls backend and clears localStorage
+    // Logout function - clears localStorage
     const logout = async () => {
         const confirmed = window.confirm("Are you sure you want to logout?");
         if (!confirmed) return;
         
         try {
-            await authService.logout();
-        } catch (error) {
-            console.error('Logout error:', error);
-        } finally {
+            // Clear authentication state
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('userInfo');
+            
             setUserInfo(null);
             setIsLoggedIn(false);
+        } catch (error) {
+            console.error('Logout error:', error);
         }
     };
 
