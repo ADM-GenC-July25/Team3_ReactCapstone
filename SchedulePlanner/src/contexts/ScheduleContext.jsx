@@ -112,61 +112,7 @@ const initialScheduleItems = [
     weeks: 15
   },
   // Time Blocks
-  {
-    id: 6,
-    itemType: 'timeBlock',
-    title: 'Chess Club',
-    day: 'Monday',
-    startTime: '15:30',
-    endTime: '17:00',
-    type: 'club',
-    description: 'Weekly chess club meeting',
-    color: '#9C27B0'
-  },
-  {
-    id: 7,
-    itemType: 'timeBlock',
-    title: 'Part-time Job',
-    day: 'Wednesday',
-    startTime: '14:00',
-    endTime: '18:00',
-    type: 'job',
-    description: 'Customer service at local store',
-    color: '#FF5722'
-  },
-  {
-    id: 8,
-    itemType: 'timeBlock',
-    title: 'Study Break',
-    day: 'Friday',
-    startTime: '12:00',
-    endTime: '13:00',
-    type: 'break',
-    description: 'Lunch and relaxation',
-    color: '#4CAF50'
-  },
-  {
-    id: 9,
-    itemType: 'timeBlock',
-    title: 'Gym Session',
-    day: 'Tuesday',
-    startTime: '18:00',
-    endTime: '19:30',
-    type: 'personal',
-    description: 'Evening workout',
-    color: '#FF9800'
-  },
-  {
-    id: 10,
-    itemType: 'timeBlock',
-    title: 'Study Group',
-    day: 'Monday',
-    startTime: '10:00', // CONFLICT: Overlaps with CS 101 and MATH 205
-    endTime: '11:00',
-    type: 'study',
-    description: 'Group study session',
-    color: '#00BCD4'
-  }
+
 ];
 
 // Utility functions for conflict detection
@@ -312,6 +258,7 @@ const findPotentialConflicts = (newItem, existingItems) => {
 // Schedule Provider Component
 export const ScheduleProvider = ({ children }) => {
   const [scheduleItems, setScheduleItems] = useState(initialScheduleItems);
+  const [userTimeBlocks, setUserTimeBlocks] = useState([]); // User's created time blocks (not in schedule yet)
   const [conflicts, setConflicts] = useState([]);
   const [potentialConflicts, setPotentialConflicts] = useState([]);
 
@@ -373,7 +320,29 @@ export const ScheduleProvider = ({ children }) => {
     };
   }, [scheduleItems]);
 
-  // Add a new time block with enhanced conflict detection
+  // Add a new time block to user's collection (not to schedule)
+  const createTimeBlock = useCallback((newTimeBlock) => {
+    const timeBlockToAdd = {
+      ...newTimeBlock,
+      id: Date.now(),
+      itemType: 'timeBlock'
+    };
+    
+    setUserTimeBlocks(prev => [...prev, timeBlockToAdd]);
+    return { success: true, timeBlock: timeBlockToAdd };
+  }, []);
+
+  // Remove a time block from user's collection
+  const removeUserTimeBlock = useCallback((timeBlockId) => {
+    setUserTimeBlocks(prev => prev.filter(block => block.id !== timeBlockId));
+  }, []);
+
+  // Get user's created time blocks
+  const getUserTimeBlocks = useCallback(() => {
+    return userTimeBlocks;
+  }, [userTimeBlocks]);
+
+  // Add a new time block with enhanced conflict detection (for checkout)
   const addTimeBlock = useCallback((newTimeBlock) => {
     const timeBlockWithDays = {
       ...newTimeBlock,
@@ -498,6 +467,8 @@ export const ScheduleProvider = ({ children }) => {
     // Actions
     addCourse,
     addTimeBlock,
+    createTimeBlock,
+    removeUserTimeBlock,
     updateCourse,
     updateTimeBlock,
     removeCourse,
@@ -509,6 +480,7 @@ export const ScheduleProvider = ({ children }) => {
     getEnrolledCourses,
     getCourses,
     getTimeBlocks,
+    getUserTimeBlocks,
     clearConflicts,
     clearPotentialConflicts,
     hasTimeConflict,
