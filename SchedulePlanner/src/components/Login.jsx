@@ -1,14 +1,14 @@
 import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import SampleUsers from './SampleUsers';
 import './Login.css';
 
 export default function Login({ onLoginSuccess }) {
     const [form, setForm] = useState({ email: '', password: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [isRegisterMode, setIsRegisterMode] = useState(false);
 
-    const { login } = useContext(AuthContext);
+    const { login, register } = useContext(AuthContext);
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -32,37 +32,38 @@ export default function Login({ onLoginSuccess }) {
         e.preventDefault();
         if (!validate()) return;
 
-        console.log(form.email, form.password);
-
         setLoading(true);
+        setError('');
+        
         try {
-            // Simulate API call
-            await new Promise(res => setTimeout(res, 800));
-
-            const user = SampleUsers.find(
-                user => user.email.toLowerCase() === form.email.toLowerCase()
-            );
-
-            if (user && form.password === user.password) {
-                const userData = {
-                    email: form.email,
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                }
-
-                // Save user to context AND localStorage
-                login(userData);
-                console.log('Logged in with:', userData);
-
-                // Call the callback to redirect
-                console.log('onLoginSuccess: ', onLoginSuccess);
+            const result = await login(form.email, form.password);
+            
+            if (result.success) {
+                console.log('Login successful:', result.data);
                 onLoginSuccess && onLoginSuccess();
             } else {
-                setError('Invalid username or password.');
+                setError(result.error || 'Login failed');
             }
+        } catch (error) {
+            console.error('Login error:', error);
+            setError('An unexpected error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    }
 
-        } catch (err) {
-            setError('Something went wrong. Please try again.');
+    async function handleRegisterAttempt(e) {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+        
+        try {
+            const result = await register('', '', '', '');
+            if (!result.success) {
+                setError(result.error);
+            }
+        } catch (error) {
+            setError('Registration is not available');
         } finally {
             setLoading(false);
         }
@@ -72,69 +73,92 @@ export default function Login({ onLoginSuccess }) {
         <div className="login-page d-flex align-items-center">
             <div className="container">
                 <div className="row justify-content-center">
-                    <div className="col-11 col-sm-8 col-md-6 col-lg-5 col-xl-4">
-                        <div className="card shadow login-card">
-                            <div className="card-body p-4 p-md-5">
-                                <h1 className="h4 mb-4 text-center">Student Login</h1>
+                    <div className="col-md-6 col-lg-4">
+                        <div className="login-card p-4">
+                            <div className="text-center mb-4">
+                                <h2>{isRegisterMode ? 'Student Registration' : 'Student Login'}</h2>
+                            </div>
 
-                                {error && (
-                                    <div className="alert alert-danger py-2" role="alert">
-                                        {error}
-                                    </div>
-                                )}
+                            {error && (
+                                <div className="alert alert-danger" role="alert">
+                                    {error}
+                                </div>
+                            )}
 
-                                <form onSubmit={handleSubmit} noValidate>
+                            {!isRegisterMode ? (
+                                // Login Form
+                                <form onSubmit={handleSubmit}>
                                     <div className="mb-3">
                                         <label htmlFor="email" className="form-label">Email</label>
                                         <input
-                                            id="email"
                                             type="email"
+                                            className="form-control"
+                                            id="email"
                                             name="email"
-                                            className={`form-control ${error && (!form.email || !/\S+@\S+\.\S+/.test(form.email)) ? 'is-invalid' : ''}`}
-                                            placeholder="Enter your student email"
                                             value={form.email}
                                             onChange={handleChange}
-                                            autoComplete="email"
+                                            required
+                                            placeholder="Enter your email"
                                         />
                                     </div>
 
                                     <div className="mb-3">
                                         <label htmlFor="password" className="form-label">Password</label>
                                         <input
-                                            id="password"
                                             type="password"
+                                            className="form-control"
+                                            id="password"
                                             name="password"
-                                            className={`form-control ${error && !form.password ? 'is-invalid' : ''}`}
-                                            placeholder="Enter your password"
                                             value={form.password}
                                             onChange={handleChange}
-                                            autoComplete="current-password"
+                                            required
+                                            placeholder="Enter your password"
                                         />
                                     </div>
 
-                                    <div className="d-flex justify-content-between align-items-center mb-3">
-                                        <a href="#" className="small text-decoration-none"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                alert(`Contact admin@contact.com to reset your password.`);
-                                            }}
-                                        >
+                                    <div className="mb-3">
+                                        <a href="#" className="text-primary" onClick={(e) => e.preventDefault()}>
                                             Forgot password?
                                         </a>
                                     </div>
 
                                     <button
                                         type="submit"
-                                        className="btn btn-submit w-100"
+                                        className="btn btn-primary w-100 mb-3"
                                         disabled={loading}
                                     >
-                                        {loading && (
-                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                        )}
                                         {loading ? 'Signing in...' : 'Sign in'}
                                     </button>
+
+                                    <div className="text-center">
+                                        <span className="text-muted">Don't have an account? </span>
+                                        <button
+                                            type="button"
+                                            className="btn-link text-primary"
+                                            onClick={() => setIsRegisterMode(true)}
+                                            style={{ border: 'none', background: 'none', padding: 0, textDecoration: 'underline' }}
+                                        >
+                                            Register
+                                        </button>
+                                    </div>
                                 </form>
-                            </div>
+                            ) : (
+                                // Registration "Form" (disabled)
+                                <form onSubmit={handleRegisterAttempt}>
+                                    <div className="alert alert-warning">
+                                        <strong>Registration Disabled</strong><br />
+                                        Please use the demo login credentials above.
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary w-100 mb-3"
+                                        onClick={() => setIsRegisterMode(false)}
+                                    >
+                                        Back to Login
+                                    </button>
+                                </form>
+                            )}
                         </div>
                     </div>
                 </div>

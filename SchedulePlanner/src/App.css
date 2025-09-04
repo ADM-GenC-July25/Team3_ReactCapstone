@@ -43,6 +43,14 @@ body {
 .nav-tabs {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
+}
+
+.user-info {
+  color: white;
+  font-size: 0.9rem;
+  margin: 0 1rem;
+  opacity: 0.9;
 }
 
 .tab-button {

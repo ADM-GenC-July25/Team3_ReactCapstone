@@ -17,7 +17,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const { isLoggedIn, userInfo, logout } = useContext(AuthContext);
+  const { isLoggedIn, userInfo, loading, logout } = useContext(AuthContext);
   const { cartCount } = useCart();
 
   // Handle navigation clicks
@@ -31,8 +31,8 @@ function App() {
   }
 
   // Handle logout
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     setActiveTab('home')
   }
 
@@ -118,7 +118,15 @@ function App() {
         </header>
 
         <main className="app-main">
-          {renderContent()}
+          {loading ? (
+            <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+              <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : (
+            renderContent()
+          )}
         </main>
 
         <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

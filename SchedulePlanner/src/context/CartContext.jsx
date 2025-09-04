@@ -17,6 +17,16 @@ export const CartProvider = ({ children }) => {
   const [toastType, setToastType] = useState('success'); // 'success', 'error', 'warning'
 
   const addToCart = (item, type) => {
+    // Check if item is already in cart
+    const isAlreadyInCart = cartItems.some(cartItem => 
+      cartItem.type === type && cartItem.id === item.id
+    );
+
+    if (isAlreadyInCart) {
+      showToastMessage(`${item.name || item.title} is already in your cart!`, 'warning');
+      return false;
+    }
+
     const cartItem = {
       ...item,
       cartId: `${type}-${item.id}-${Date.now()}`, // Unique cart ID
@@ -26,6 +36,7 @@ export const CartProvider = ({ children }) => {
 
     setCartItems(prevItems => [...prevItems, cartItem]);
     showToastMessage(`${item.name || item.title} added to cart!`, 'success');
+    return true;
   };
 
   const removeFromCart = (cartId) => {

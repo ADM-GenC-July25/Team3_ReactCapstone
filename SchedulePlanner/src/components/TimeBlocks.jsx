@@ -21,8 +21,8 @@ const TimeBlocks = () => {
   const [newTimeBlock, setNewTimeBlock] = useState({
     title: '',
     day: 'Monday',
-    startTime: '09:00',
-    endTime: '10:00',
+    startTime: '9:00 AM',
+    endTime: '10:00 AM',
     type: 'club',
     description: ''
   });
@@ -34,10 +34,13 @@ const TimeBlocks = () => {
 
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const timeSlots = [
-    '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
-    '11:00', '11:15', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
-    '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30',
-    '21:00', '21:30', '21:45', '22:00'
+    '8:00 AM', '8:15 AM', '8:30 AM', '8:45 AM', '9:00 AM', '9:15 AM', '9:30 AM', '9:45 AM', 
+    '10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM', '11:00 AM', '11:15 AM', '11:30 AM', '11:45 AM',
+    '12:00 PM', '12:15 PM', '12:30 PM', '12:45 PM', '1:00 PM', '1:15 PM', '1:30 PM', '1:45 PM', 
+    '2:00 PM', '2:15 PM', '2:30 PM', '2:45 PM', '3:00 PM', '3:15 PM', '3:30 PM', '3:45 PM',
+    '4:00 PM', '4:15 PM', '4:30 PM', '4:45 PM', '5:00 PM', '5:15 PM', '5:30 PM', '5:45 PM', 
+    '6:00 PM', '6:15 PM', '6:30 PM', '6:45 PM', '7:00 PM', '7:15 PM', '7:30 PM', '7:45 PM',
+    '8:00 PM'
   ];
 
   const typeColors = {
@@ -48,12 +51,9 @@ const TimeBlocks = () => {
     other: '#607D8B'
   };
 
-  const formatTimeDisplay = (time24) => {
-    const [hours, minutes] = time24.split(':');
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-    return `${displayHour}:${minutes} ${ampm}`;
+  const formatTimeDisplay = (time12) => {
+    // Since times are now stored in 12-hour format, just return as-is
+    return time12;
   };
 
   const getWeekDateRange = (weekNumber) => {
@@ -77,8 +77,8 @@ const TimeBlocks = () => {
     
     return {
       gridColumn: dayIndex + 2, // +2 because first column is time labels
-      gridRowStart: startIndex + 2, // +2 because first row is headers
-      gridRowEnd: endIndex + 2,
+      gridRowStart: startIndex + 3, // +3 instead of +2 to fix offset
+      gridRowEnd: endIndex + 3,     // +3 instead of +2 to fix offset
       backgroundColor: event.color
     };
   };
@@ -107,8 +107,8 @@ const TimeBlocks = () => {
         setNewTimeBlock({
           title: '',
           day: 'Monday',
-          startTime: '09:00',
-          endTime: '10:00',
+          startTime: '9:00 AM',
+          endTime: '10:00 AM',
           type: 'club',
           description: ''
         });

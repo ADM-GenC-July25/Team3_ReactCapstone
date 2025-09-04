@@ -7,13 +7,10 @@ const Cart = ({ isOpen, onClose }) => {
   const { cartItems, removeFromCart, clearCart, checkout, cartCount } = useCart();
   const scheduleContext = useSchedule();
 
-  const formatTime = (time24) => {
-    if (!time24) return '';
-    const [hours, minutes] = time24.split(':');
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-    return `${displayHour}:${minutes} ${ampm}`;
+  const formatTime = (time12) => {
+    // Since times are now stored in 12-hour format, just return as-is
+    if (!time12) return '';
+    return time12;
   };
 
   const formatDays = (days) => {
@@ -37,6 +34,7 @@ const Cart = ({ isOpen, onClose }) => {
     let hasConflicts = false;
     const conflictInfo = [];
 
+    // First check conflicts with existing schedule
     cartItems.forEach(item => {
       const enrolledCourses = scheduleContext.getEnrolledCourses();
       const timeBlocks = scheduleContext.getTimeBlocks();
@@ -58,7 +56,75 @@ const Cart = ({ isOpen, onClose }) => {
       }
     });
 
+    // Check for conflicts between items in the cart
+    for (let i = 0; i < cartItems.length; i++) {
+      for (let j = i + 1; j < cartItems.length; j++) {
+        const item1 = {
+          ...cartItems[i],
+          itemType: cartItems[i].type,
+          days: cartItems[i].type === 'course' ? (Array.isArray(cartItems[i].days) ? cartItems[i].days : [cartItems[i].day]) : [cartItems[i].day]
+        };
+        const item2 = {
+          ...cartItems[j],
+          itemType: cartItems[j].type,
+          days: cartItems[j].type === 'course' ? (Array.isArray(cartItems[j].days) ? cartItems[j].days : [cartItems[j].day]) : [cartItems[j].day]
+        };
+
+        // Use the same conflict detection logic from ScheduleContext
+        if (hasTimeConflict(item1, item2)) {
+          hasConflicts = true;
+          conflictInfo.push({
+            item: item1.name || item1.title,
+            conflicts: [item2.name || item2.title]
+          });
+        }
+      }
+    }
+
     return { hasConflicts, conflictInfo };
+  };
+
+  // Helper function to check time conflicts (copied from ScheduleContext)
+  const hasTimeConflict = (item1, item2) => {
+    // Check if items are on the same day
+    const days1 = item1.itemType === 'course' ? item1.days : [item1.day];
+    const days2 = item2.itemType === 'course' ? item2.days : [item2.day];
+    
+    const commonDays = days1.filter(day => days2.includes(day));
+    if (commonDays.length === 0) return false;
+    
+    // Check for time overlap on common days
+    const start1 = timeToMinutes(item1.startTime);
+    const end1 = timeToMinutes(item1.endTime);
+    const start2 = timeToMinutes(item2.startTime);
+    const end2 = timeToMinutes(item2.endTime);
+    
+    return (start1 < end2 && start2 < end1);
+  };
+
+  // Helper function to convert time to minutes (updated for 12-hour format)
+  const timeToMinutes = (timeStr) => {
+    // Handle 12-hour format with AM/PM
+    const timePattern = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i;
+    const match = timeStr.match(timePattern);
+    
+    if (!match) {
+      console.error('Invalid time format:', timeStr);
+      return 0;
+    }
+    
+    let hours = parseInt(match[1]);
+    const minutes = parseInt(match[2]);
+    const period = match[3].toUpperCase();
+    
+    // Convert to 24-hour format for calculations
+    if (period === 'PM' && hours !== 12) {
+      hours += 12;
+    } else if (period === 'AM' && hours === 12) {
+      hours = 0;
+    }
+    
+    return hours * 60 + minutes;
   };
 
   const { hasConflicts, conflictInfo } = checkForConflicts();
