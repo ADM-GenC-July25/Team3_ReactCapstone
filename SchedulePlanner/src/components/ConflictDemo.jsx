@@ -5,17 +5,13 @@ import './ConflictDemo.css';
 const ConflictDemo = () => {
   const { addCourse, conflicts, potentialConflicts, clearConflicts, clearPotentialConflicts } = useSchedule();
   const [newCourse, setNewCourse] = useState({
-    name: 'Test Course',
-    subject: 'CS',
-    course: '102',
-    section: '001',
-    startTime: '09:00', // This will conflict with CS 101
-    endTime: '10:30',
-    days: ['Monday'],
-    room: 'Room 202',
-    instructor: 'Dr. Test',
-    courseDescription: 'Test Course for Conflict Demo',
-    color: '#E91E63'
+    name: '',
+    startTime: '9:00 AM', // Conflicts with CS 101
+    endTime: '10:30 AM',
+    days: [],
+    room: '',
+    instructor: '',
+    color: '#FF5722'
   });
 
   const handleAddCourse = () => {
@@ -110,20 +106,68 @@ const ConflictDemo = () => {
 
         <div className="form-group">
           <label>Start Time:</label>
-          <input
-            type="time"
+          <select
             value={newCourse.startTime}
             onChange={(e) => setNewCourse(prev => ({ ...prev, startTime: e.target.value }))}
-          />
+          >
+            <option value="8:00 AM">8:00 AM</option>
+            <option value="8:30 AM">8:30 AM</option>
+            <option value="9:00 AM">9:00 AM</option>
+            <option value="9:30 AM">9:30 AM</option>
+            <option value="10:00 AM">10:00 AM</option>
+            <option value="10:30 AM">10:30 AM</option>
+            <option value="11:00 AM">11:00 AM</option>
+            <option value="11:30 AM">11:30 AM</option>
+            <option value="12:00 PM">12:00 PM</option>
+            <option value="12:30 PM">12:30 PM</option>
+            <option value="1:00 PM">1:00 PM</option>
+            <option value="1:30 PM">1:30 PM</option>
+            <option value="2:00 PM">2:00 PM</option>
+            <option value="2:30 PM">2:30 PM</option>
+            <option value="3:00 PM">3:00 PM</option>
+            <option value="3:30 PM">3:30 PM</option>
+            <option value="4:00 PM">4:00 PM</option>
+            <option value="4:30 PM">4:30 PM</option>
+            <option value="5:00 PM">5:00 PM</option>
+            <option value="5:30 PM">5:30 PM</option>
+            <option value="6:00 PM">6:00 PM</option>
+            <option value="6:30 PM">6:30 PM</option>
+            <option value="7:00 PM">7:00 PM</option>
+            <option value="7:30 PM">7:30 PM</option>
+          </select>
         </div>
 
         <div className="form-group">
           <label>End Time:</label>
-          <input
-            type="time"
+          <select
             value={newCourse.endTime}
             onChange={(e) => setNewCourse(prev => ({ ...prev, endTime: e.target.value }))}
-          />
+          >
+            <option value="8:30 AM">8:30 AM</option>
+            <option value="9:00 AM">9:00 AM</option>
+            <option value="9:30 AM">9:30 AM</option>
+            <option value="10:00 AM">10:00 AM</option>
+            <option value="10:30 AM">10:30 AM</option>
+            <option value="11:00 AM">11:00 AM</option>
+            <option value="11:30 AM">11:30 AM</option>
+            <option value="12:00 PM">12:00 PM</option>
+            <option value="12:30 PM">12:30 PM</option>
+            <option value="1:00 PM">1:00 PM</option>
+            <option value="1:30 PM">1:30 PM</option>
+            <option value="2:00 PM">2:00 PM</option>
+            <option value="2:30 PM">2:30 PM</option>
+            <option value="3:00 PM">3:00 PM</option>
+            <option value="3:30 PM">3:30 PM</option>
+            <option value="4:00 PM">4:00 PM</option>
+            <option value="4:30 PM">4:30 PM</option>
+            <option value="5:00 PM">5:00 PM</option>
+            <option value="5:30 PM">5:30 PM</option>
+            <option value="6:00 PM">6:00 PM</option>
+            <option value="6:30 PM">6:30 PM</option>
+            <option value="7:00 PM">7:00 PM</option>
+            <option value="7:30 PM">7:30 PM</option>
+            <option value="8:00 PM">8:00 PM</option>
+          </select>
         </div>
 
         <div className="form-group">
