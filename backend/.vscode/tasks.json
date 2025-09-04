@@ -1,0 +1,65 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Install Maven",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-Command",
+				"Invoke-WebRequest -Uri 'https://archive.apache.org/dist/maven/maven-3/3.9.5/binaries/apache-maven-3.9.5-bin.zip' -OutFile 'maven.zip'; Expand-Archive -Path 'maven.zip' -DestinationPath '.' -Force; Remove-Item 'maven.zip'"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Build Spring Boot Application",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-Command",
+				"if (Test-Path 'apache-maven-3.9.5\\bin\\mvn.cmd') { .\\apache-maven-3.9.5\\bin\\mvn.cmd clean compile } else { Write-Host 'Maven not found. Please run Install Maven task first.' }"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"isBackground": false
+		},
+		{
+			"label": "Package Spring Boot Application",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-Command",
+				"if (Test-Path 'apache-maven-3.9.5\\bin\\mvn.cmd') { .\\apache-maven-3.9.5\\bin\\mvn.cmd clean package -DskipTests } else { Write-Host 'Maven not found. Please run Install Maven task first.' }"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"isBackground": false
+		},
+		{
+			"label": "Run Spring Boot Application",
+			"type": "shell",
+			"command": "java",
+			"args": [
+				"-jar",
+				"target/schedule-planner-backend-0.0.1-SNAPSHOT.jar"
+			],
+			"group": "build",
+			"isBackground": true,
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			},
+			"problemMatcher": [],
+			"dependsOn": "Package Spring Boot Application"
+		}
+	]
+}

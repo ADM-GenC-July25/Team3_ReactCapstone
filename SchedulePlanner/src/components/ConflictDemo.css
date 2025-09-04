@@ -1,0 +1,144 @@
+.conflict-demo {
+  background: #f8f9fa;
+  border: 2px solid #74b9ff;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 2px 8px rgba(116, 185, 255, 0.1);
+}
+
+.conflict-demo h3 {
+  color: #0984e3;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.conflict-demo p {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.demo-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #74b9ff;
+  box-shadow: 0 0 0 2px rgba(116, 185, 255, 0.2);
+}
+
+.days-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.day-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: #2c3e50;
+  cursor: pointer;
+}
+
+.day-checkbox input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.add-course-btn {
+  background: #74b9ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  grid-column: 1 / -1;
+  justify-self: center;
+  min-width: 150px;
+}
+
+.add-course-btn:hover {
+  background: #0984e3;
+}
+
+.add-course-btn:active {
+  transform: translateY(1px);
+}
+
+.demo-tips {
+  background: white;
+  border-radius: 6px;
+  padding: 16px;
+  border: 1px solid #ecf0f1;
+}
+
+.demo-tips h4 {
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.demo-tips ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.demo-tips li {
+  color: #34495e;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.demo-tips strong {
+  color: #2c3e50;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .demo-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .days-checkboxes {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .conflict-demo {
+    padding: 16px;
+  }
+} 

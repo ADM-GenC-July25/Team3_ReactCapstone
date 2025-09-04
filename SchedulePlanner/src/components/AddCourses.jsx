@@ -1,0 +1,125 @@
+import { useState } from 'react';
+import { useCart } from '../context/CartContext';
+import './Courses.css';
+
+export default function AddCourses({ courseList, setCourseList, setIsAddCourses }) {
+
+    const [selectedCourse, setSelectedCourse] = useState({});
+    const { addToCart } = useCart();
+
+    return (
+        <>
+            <div className='courseListContainer'>
+                <div className='courseListHeader'>
+                    <h2>Add Courses</h2>
+                    <button
+                        className='btn btn-light'
+                        onClick={() => setIsAddCourses(false)}
+                    >
+                        <i className="fa fa-minus" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div className="table-responsive">
+                    <table className="table table-hover">
+                        <tbody>
+                            {courseList
+                                .map((course) => (
+                                    <tr key={course.id}>
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                value={course.id}
+                                            />
+                                        </td>
+                                        <td className='text-left'>{course.name}</td>
+                                        <td>
+                                            <button type="button"
+                                                className="btn btn-outline-info"
+                                                data-toggle="modal"
+                                                data-target="#exampleModalCenter"
+                                                onClick={() => setSelectedCourse(course)}
+                                            >
+                                                <i className="fa fa-info-circle"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button type="button"
+                                                className="btn btn-success"
+                                                onClick={() => {
+                                                    setCourseList(courseList.map(c =>
+                                                        c.id === course.id ? { ...c, isSelected: true } : c
+                                                    ));
+                                                }}
+                                                disabled={course.isSelected}
+                                                title="Add to Schedule"
+                                            >
+                                                <i className='fa fa-plus' aria-hidden="true"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button type="button"
+                                                className="btn btn-primary"
+                                                onClick={() => addToCart(course, 'course')}
+                                                title="Add to Cart"
+                                            >
+                                                <i className='fa fa-shopping-cart' aria-hidden="true"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Modal to view course details */}
+            <div className="modal fade" id="exampleModalCenter" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLongTitle">
+                                <span
+                                    style={{
+                                        backgroundColor: selectedCourse.color,
+                                        padding: '0 10px',
+                                        borderRadius: '5px',
+                                        display: 'inline-block',
+                                    }}
+                                >
+                                    &nbsp;
+                                </span>&nbsp;
+                                {selectedCourse.name}
+                            </h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <p>
+                                <strong>Time:</strong>
+                                <br />
+                                {selectedCourse.startTime} - {selectedCourse.endTime}
+                            </p>
+                            <p>
+                                <strong>Room:</strong>
+                                <br />
+                                {selectedCourse.room}
+                            </p>
+                            <p>
+                                <strong>Instructor:</strong>
+                                <br />
+                                {selectedCourse.instructor}
+                            </p>
+                            <p>
+                                <strong>Description:</strong> <br />
+                                {selectedCourse.courseDescription}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+
+
+    )
+}
