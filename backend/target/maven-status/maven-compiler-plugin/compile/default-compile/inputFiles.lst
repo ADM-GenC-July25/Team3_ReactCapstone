@@ -1,7 +1,15 @@
-C:\Users\978384\OneDrive - Cognizant\Desktop\Training\Team3_ReactCapstone\SchedulePlanner\backend\src\main\java\com\scheduleplanner\backend\config\DataInitializer.java
-C:\Users\978384\OneDrive - Cognizant\Desktop\Training\Team3_ReactCapstone\SchedulePlanner\backend\src\main\java\com\scheduleplanner\backend\controller\TimeBlockController.java
-C:\Users\978384\OneDrive - Cognizant\Desktop\Training\Team3_ReactCapstone\SchedulePlanner\backend\src\main\java\com\scheduleplanner\backend\repository\TimeBlockRepository.java
-C:\Users\978384\OneDrive - Cognizant\Desktop\Training\Team3_ReactCapstone\SchedulePlanner\backend\src\main\java\com\scheduleplanner\backend\service\TimeBlockService.java
-C:\Users\978384\OneDrive - Cognizant\Desktop\Training\Team3_ReactCapstone\SchedulePlanner\backend\src\main\java\com\scheduleplanner\backend\config\CorsConfig.java
-C:\Users\978384\OneDrive - Cognizant\Desktop\Training\Team3_ReactCapstone\SchedulePlanner\backend\src\main\java\com\scheduleplanner\backend\SchedulePlannerBackendApplication.java
-C:\Users\978384\OneDrive - Cognizant\Desktop\Training\Team3_ReactCapstone\SchedulePlanner\backend\src\main\java\com\scheduleplanner\backend\model\TimeBlock.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\controller\TimeBlockController.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\model\LoginRequest.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\model\TimeBlock.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\model\RegisterRequest.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\model\Student.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\controller\AuthController.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\SchedulePlannerBackendApplication.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\model\TimeBlockDTO.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\repository\StudentRepository.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\config\SecurityConfig.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\config\JwtUtil.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\service\TimeBlockService.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\model\AuthResponse.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\repository\TimeBlockRepository.java
+C:\Users\2363514\Downloads\team3repo\Team3_ReactCapstone\backend\src\main\java\com\scheduleplanner\backend\service\AuthService.java

@@ -1,10 +1,12 @@
 package com.scheduleplanner.backend.service;
 
 import com.scheduleplanner.backend.model.TimeBlock;
+import com.scheduleplanner.backend.model.TimeBlock.DayOfWeek;
 import com.scheduleplanner.backend.repository.TimeBlockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
@@ -35,12 +37,28 @@ public class TimeBlockService {
         return timeBlockRepository.findById(id);
     }
     
-    public List<TimeBlock> getTimeBlocksByDay(String day) {
+    public List<TimeBlock> getTimeBlocksByDay(DayOfWeek day) {
         return timeBlockRepository.findByDay(day);
     }
     
     public List<TimeBlock> getTimeBlocksByType(String type) {
         return timeBlockRepository.findByType(type);
+    }
+    
+    public List<TimeBlock> getTimeBlocksByStudentId(Long studentId) {
+        return timeBlockRepository.findByStudentId(studentId);
+    }
+    
+    public List<TimeBlock> getTimeBlocksByStudentIdAndDay(Long studentId, DayOfWeek day) {
+        return timeBlockRepository.findByStudentIdAndDay(studentId, day);
+    }
+    
+    public List<TimeBlock> getTimeBlocksByStudentIdAndType(Long studentId, String type) {
+        return timeBlockRepository.findByStudentIdAndType(studentId, type);
+    }
+    
+    public List<TimeBlock> getTimeBlocksForScheduleView(Long studentId) {
+        return timeBlockRepository.findTimeBlocksForScheduleView(studentId);
     }
     
     public TimeBlock createTimeBlock(TimeBlock timeBlock) {
@@ -61,7 +79,9 @@ public class TimeBlockService {
         timeBlock.setStartTime(timeBlockDetails.getStartTime());
         timeBlock.setEndTime(timeBlockDetails.getEndTime());
         timeBlock.setType(timeBlockDetails.getType());
+        timeBlock.setWeeks(timeBlockDetails.getWeeks());
         timeBlock.setDescription(timeBlockDetails.getDescription());
+        timeBlock.setStudentId(timeBlockDetails.getStudentId());
         
         // Update color based on type if not provided
         if (timeBlockDetails.getColor() == null || timeBlockDetails.getColor().isEmpty()) {
@@ -79,8 +99,24 @@ public class TimeBlockService {
         timeBlockRepository.delete(timeBlock);
     }
     
-    public List<TimeBlock> checkForOverlaps(String day, String startTime, String endTime) {
+    public List<TimeBlock> checkForOverlaps(DayOfWeek day, LocalTime startTime, LocalTime endTime) {
         return timeBlockRepository.findOverlappingTimeBlocks(day, startTime, endTime);
+    }
+    
+    public List<TimeBlock> checkForOverlapsForStudent(Long studentId, DayOfWeek day, LocalTime startTime, LocalTime endTime) {
+        return timeBlockRepository.findOverlappingTimeBlocksForStudent(studentId, day, startTime, endTime);
+    }
+    
+    // Legacy method for backwards compatibility (converts String to DayOfWeek and String to LocalTime)
+    public List<TimeBlock> checkForOverlaps(String day, String startTime, String endTime) {
+        try {
+            DayOfWeek dayOfWeek = DayOfWeek.valueOf(day);
+            LocalTime start = LocalTime.parse(startTime);
+            LocalTime end = LocalTime.parse(endTime);
+            return checkForOverlaps(dayOfWeek, start, end);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid day or time format", e);
+        }
     }
     
     public Map<String, String> getTypeColors() {

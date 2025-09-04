@@ -1,71 +1,71 @@
 package com.scheduleplanner.backend.model;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
 
-@Entity
-@Table(name = "time_blocks")
-public class TimeBlock {
+public class TimeBlockDTO {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "time_block_id")
     private Long timeBlockId;
     
     @NotBlank(message = "Title is required")
-    @Column(name = "title", nullable = false, length = 200)
     private String title;
     
     @NotNull(message = "Start time is required")
-    @Column(name = "start_time", nullable = false)
+    @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime startTime;
     
     @NotNull(message = "End time is required")
-    @Column(name = "end_time", nullable = false)
+    @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime endTime;
     
     @NotNull(message = "Day is required")
-    @Enumerated(EnumType.STRING)
-    @Column(name = "day", nullable = false)
-    private DayOfWeek day;
+    private String day; // String for easier JSON handling, will be converted to enum
     
     @NotBlank(message = "Type is required")
-    @Column(name = "type", nullable = false, length = 50)
     private String type;
     
-    @Column(name = "weeks")
     private Integer weeks;
     
-    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
     
-    @Column(name = "color", length = 7)
     private String color;
     
-    @Column(name = "student_id")
     private Long studentId;
     
-    // Enum for days of the week to match database ENUM
-    public enum DayOfWeek {
-        Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+    // Constructors
+    public TimeBlockDTO() {}
+    
+    public TimeBlockDTO(TimeBlock timeBlock) {
+        this.timeBlockId = timeBlock.getTimeBlockId();
+        this.title = timeBlock.getTitle();
+        this.startTime = timeBlock.getStartTime();
+        this.endTime = timeBlock.getEndTime();
+        this.day = timeBlock.getDay() != null ? timeBlock.getDay().name() : null;
+        this.type = timeBlock.getType();
+        this.weeks = timeBlock.getWeeks();
+        this.description = timeBlock.getDescription();
+        this.color = timeBlock.getColor();
+        this.studentId = timeBlock.getStudentId();
     }
     
-    // Constructors
-    public TimeBlock() {}
-    
-    public TimeBlock(String title, LocalTime startTime, LocalTime endTime, DayOfWeek day, 
-                    String type, Integer weeks, String description, String color, Long studentId) {
-        this.title = title;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.day = day;
-        this.type = type;
-        this.weeks = weeks;
-        this.description = description;
-        this.color = color;
-        this.studentId = studentId;
+    // Convert DTO to Entity
+    public TimeBlock toEntity() {
+        TimeBlock timeBlock = new TimeBlock();
+        timeBlock.setTimeBlockId(this.timeBlockId);
+        timeBlock.setTitle(this.title);
+        timeBlock.setStartTime(this.startTime);
+        timeBlock.setEndTime(this.endTime);
+        if (this.day != null) {
+            timeBlock.setDay(TimeBlock.DayOfWeek.valueOf(this.day));
+        }
+        timeBlock.setType(this.type);
+        timeBlock.setWeeks(this.weeks);
+        timeBlock.setDescription(this.description);
+        timeBlock.setColor(this.color);
+        timeBlock.setStudentId(this.studentId);
+        return timeBlock;
     }
     
     // Getters and Setters
@@ -101,11 +101,11 @@ public class TimeBlock {
         this.endTime = endTime;
     }
     
-    public DayOfWeek getDay() {
+    public String getDay() {
         return day;
     }
     
-    public void setDay(DayOfWeek day) {
+    public void setDay(String day) {
         this.day = day;
     }
     
@@ -149,7 +149,7 @@ public class TimeBlock {
         this.studentId = studentId;
     }
     
-    // Legacy getter for backwards compatibility with existing controller
+    // Legacy compatibility
     public Long getId() {
         return timeBlockId;
     }
@@ -157,4 +157,4 @@ public class TimeBlock {
     public void setId(Long id) {
         this.timeBlockId = id;
     }
-}
+} 
