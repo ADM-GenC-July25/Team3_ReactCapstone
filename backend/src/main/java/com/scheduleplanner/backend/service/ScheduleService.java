@@ -60,4 +60,13 @@ public class ScheduleService {
         
         return new CompleteScheduleDTO(timeBlocks, courses);
     }
-} 
+    
+    /**
+     * Get student ID by email address
+     * @param email The email address of the student
+     * @return Student ID or null if not found
+     */
+    public Integer getStudentIdByEmail(String email) {
+        return scheduleRepository.getStudentIdByEmail(email);
+    }
+}

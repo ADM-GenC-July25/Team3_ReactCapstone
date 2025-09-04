@@ -18,4 +18,7 @@ public interface ScheduleRepository {
     
     // Get courses for a specific student
     List<CourseScheduleDTO> getCourseScheduleByStudent(Integer studentId);
-} 
+    
+    // Get student ID by email address
+    Integer getStudentIdByEmail(String email);
+}

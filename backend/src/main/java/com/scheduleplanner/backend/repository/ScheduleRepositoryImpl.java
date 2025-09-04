@@ -123,4 +123,16 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
             )
         );
     }
-} 
+    
+    @Override
+    public Integer getStudentIdByEmail(String email) {
+        String sql = "SELECT student_id FROM students WHERE email = ?";
+        
+        try {
+            return jdbcTemplate.queryForObject(sql, Integer.class, email);
+        } catch (Exception e) {
+            // Return null if student not found
+            return null;
+        }
+    }
+}
